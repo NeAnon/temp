@@ -1,13 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script type = "text/javascript">
+    
+    //I don't know if I should trust this function. I might switch over to FileSaver.js in case of compat issues.
 
+    function download(filename, text) {
+      //Create a new element (a hyperlink to a file)
+      var element = document.createElement('a');
+      //The file is of a plaintext type
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      //And set to be downloaded upon submitting the form
+      element.setAttribute('download', filename);
+      
+      //This element is temporarily placed in the browser body, activated, and then removed.
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+    </script>
+    
 </head>
 <body>
 
   <h1>Sample</h1>
   
   <p>Nothing to see here (for now).</p>
-  
+
+  <!-- This form downloads a file when submitted --> 
+  <form onsubmit="download(this['name'].value, this['text'].value)">
+    <input type="text" name="name"> <br>
+    <textarea name="text"></textarea> <br>
+    <input type="submit" value="Download">
+  </form>
+
 </body>
 </html>
