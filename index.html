@@ -42,6 +42,14 @@
       element.click();
       document.body.removeChild(element);
     } 
+
+    function parseInputToText(templateText, input){
+      alert("Parsing... Template: " + templateText + ", Variable: " + input);
+      returnString = templateText.replace('%s%', input);
+      alert(returnString);
+      return returnString;
+      
+    }
   </script>
     
 </head>
@@ -49,8 +57,8 @@
 
   <!-- Tab links -->
   <div class="tab">
-    <button class="tabs" onclick="openTab(event, 'Fill')" id="defaultOpen">Fill</button>
-    <button class="tabs" onclick="openTab(event, 'Design')">Design</button>
+    <button class="tabs" onclick="openTab(event, 'Fill')" >Fill</button>
+    <button class="tabs" onclick="openTab(event, 'Design')" id="defaultOpen">Design</button>
     <button class="tabs" onclick="openTab(event, 'Code')">Code</button>
   </div>
 
@@ -58,8 +66,7 @@
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
     <!-- This form downloads a file when submitted -->     
-    <form id="downloadInput" onsubmit="download(this['name'].value, this['text'].value)">
-      <input id="filenameInput" type="text" name="name" placeholder="filename.extension"> <br>
+    <form id="downloadInput" onsubmit="download(getElementById('filenameInput').value, parseInputToText(getElementById('templateText').value, this['text'].value))">
       <textarea name="text"></textarea> <br>
       <input type="submit" value="Download">
     </form>
@@ -72,8 +79,9 @@
   <div id="Code" class="tabcontent">
     <h3>Code</h3>
     <div class="codeEntry">
-      
+      <textarea name="template" id="templateText"></textarea>
     </div>
+    <input id="filenameInput" type="text" name="name" placeholder="filename.extension"> <br>
   </div> 
 
 </body>
