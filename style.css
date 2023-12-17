@@ -49,3 +49,7 @@ form * {
   border: 1px solid #a30000;
   border-top: none;
 } 
+
+.codeEntry textarea{
+  font-family: monospace;
+}
