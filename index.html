@@ -36,6 +36,7 @@
       var element = document.createElement('a');                                                      //Create a new element (a hyperlink to a file)
       element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));   //The file contents are of a plaintext type
       element.setAttribute('download', filename);                                                     //And set to be downloaded upon submitting the form
+      element.setAttribute('target', '_blank');    element.setAttribute('rel', "noopener noreferrer");    
 
       //This element is temporarily placed in the browser body, activated, and then removed.
       document.body.appendChild(element);
@@ -44,9 +45,7 @@
     } 
 
     function parseInputToText(templateText, input){
-      alert("Parsing... Template: " + templateText + ", Variable: " + input);
       returnString = templateText.replace('%s%', input);
-      alert(returnString);
       return returnString;
       
     }
@@ -65,11 +64,8 @@
   <!-- Tab content -->
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
-    <!-- This form downloads a file when submitted -->     
-    <form id="downloadInput" onsubmit="download(getElementById('filenameInput').value, parseInputToText(getElementById('templateText').value, this['text'].value))">
-      <textarea name="text"></textarea> <br>
-      <input type="submit" value="Download">
-    </form>
+    <textarea id="vars"></textarea> <br>
+    <button onclick="download(getElementById('filenameInput').value, parseInputToText(getElementById('templateText').value, getElementById('vars').value));">Download</button>
   </div>
 
   <div id="Design" class="tabcontent">
