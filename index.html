@@ -3,36 +3,78 @@
 <head>
   <script type = "text/javascript">
     
+    function openDefaultTab(){
+      // Get the element with id="defaultOpen" and click on it  
+      document.getElementById('defaultOpen').click();
+    }
+
+    function openTab(evt, TabName) {
+      // Declare all variables
+      var i, tabcontent, tabs;
+
+      // Get all elements with class="tabcontent" and hide them
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+
+      // Get all elements with class="tabs" and remove the class "active"
+      tabs = document.getElementsByClassName("tabs");
+      for (i = 0; i < tabs.length; i++) {
+        tabs[i].className = tabs[i].className.replace("active", "");
+      }
+    
+
+    // Show the current tab, and add an "active" class to the button that opened the tab
+      document.getElementById(TabName).style.display = "block";
+      evt.currentTarget.className += "active";
+    }
+
     //I don't know if I should trust this function. I might switch over to FileSaver.js in case of compat issues.
 
-    function download(filename, text) {
-      //Create a new element (a hyperlink to a file)
-      var element = document.createElement('a');
-      //The file is of a plaintext type
-      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-      //And set to be downloaded upon submitting the form
-      element.setAttribute('download', filename);
-      
+    function download(filename, content) {
+      var element = document.createElement('a');                                                      //Create a new element (a hyperlink to a file)
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));   //The file contents are of a plaintext type
+      element.setAttribute('download', filename);                                                     //And set to be downloaded upon submitting the form
+
       //This element is temporarily placed in the browser body, activated, and then removed.
       document.body.appendChild(element);
       element.click();
       document.body.removeChild(element);
-    }
-    </script>
+    } 
+  </script>
     
 </head>
-<body>
+<body onload="openDefaultTab()">
 
-  <h1>Sample</h1>
-  
-  <p>Nothing to see here (for now).</p>
+  <!-- Tab links -->
+  <div class="tab">
+    <button class="tabs" onclick="openTab(event, 'Fill')" id="defaultOpen">Fill</button>
+    <button class="tabs" onclick="openTab(event, 'Design')">Design</button>
+    <button class="tabs" onclick="openTab(event, 'Code')">Code</button>
+  </div>
 
-  <!-- This form downloads a file when submitted --> 
-  <form onsubmit="download(this['name'].value, this['text'].value)">
-    <input type="text" name="name"> <br>
-    <textarea name="text"></textarea> <br>
-    <input type="submit" value="Download">
-  </form>
+  <!-- Tab content -->
+  <div id="Fill" class="tabcontent">
+    <h3>Fill</h3>
+    <!-- This form downloads a file when submitted -->     
+    <form id="downloadInput" onsubmit="download(this['name'].value, this['text'].value)">
+      <input id="filenameInput" type="text" name="name" placeholder="filename.extension"> <br>
+      <textarea name="text"></textarea> <br>
+      <input type="submit" value="Download">
+    </form>
+  </div>
+
+  <div id="Design" class="tabcontent">
+    <h3>Design</h3>
+  </div>
+
+  <div id="Code" class="tabcontent">
+    <h3>Code</h3>
+    <div class="codeEntry">
+      
+    </div>
+  </div> 
 
 </body>
 </html>
