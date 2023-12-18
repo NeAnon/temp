@@ -48,48 +48,58 @@
 
     function addField(){
       //alert("Started...");
-      var count = parseInt(document.getElementById("varList").getAttribute('count'));
       var varList = document.getElementById("varList");
+      var count = parseInt(varList.getAttribute('count'));
       //alert(count);
-      varList.setAttribute('count', count+1);
       //alert("value saved! Current count: " + varList.getAttribute('value'));
+      newDiv = document.createElement('div');
+      newDiv.id = 'var'+count+'container';
+
       element = document.createElement('input');
       element.type = "text";
       element.id= 'var'+(count);
       element.size=10;
       //alert("child created.");
-      var ref = varList.appendChild(element);
+      newDiv.appendChild(element);
 
       //alert("Child textbox added, id: " +(element.getAttribute('id')));
       
       linebreak = document.createElement("br");
-      varList.appendChild(linebreak);
+      newDiv.appendChild(linebreak);
+      varList.appendChild(newDiv);
 
+      varList.setAttribute('count', count+1);
+      /*
       alert(ref.id);
       if(parseInt(varList.getAttribute('count')) > 2){
         alert("More than 2 textboxes.");
         alert("Textbox 3 contents: " + document.getElementById("var2").value);
       }
+      */
     }
 
     function removeField(){
       var varList = document.getElementById("varList");
       //alert("varList located");
-      var targetId = 'var'+(parseInt(varList.getAttribute('count'))-1);
+      varList.setAttribute('count', parseInt(varList.getAttribute('count'))-1)
+      var targetId = 'var'+(parseInt(varList.getAttribute('count')))+'container';
       //alert("target's Id: " + targetId);
       document.getElementById(targetId).remove();
       //alert("Target deleted.");
     }
     
-    function findAndReplaceAll(templateText, ){
-
-    }
-
-    function parseInputToText(templateText, input){
-      returnString = templateText.replace('%s%', input);
-      return returnString;
-    }
-    
+    function findAndReplaceAll(templateText){
+      var varCount = parseInt(document.getElementById("varList").getAttribute('count'));
+      //alert(varCount);
+      for(var i = 0; i < varCount; i++){
+        //alert("replacing %"+i+"% with var"+i);
+        //alert("textbox value: " + document.getElementById('var'+i).value);
+        templateText = templateText.replaceAll('%'+i+'%', document.getElementById('var'+i).value);
+        //alert("Success!");
+      }
+      //alert(templateText);
+      return templateText;
+    }    
 
   </script>
     
@@ -108,7 +118,8 @@
     <h3>Fill</h3>
     <div id = "varList" count = '0'>
     </div>
-    <button onclick="download(getElementById('filenameInput').value, parseInputToText(getElementById('templateText').value, getElementById('vars').value));">Download</button>
+    <button onclick="download(findAndReplaceAll(getElementById('filenameInput').value), findAndReplaceAll(getElementById('templateText').value));">Download</button> <br/>
+    <button onclick="findAndReplaceAll(getElementById('templateText').value);">Parse test</button> <br/>
   </div>
 
   <div id="Design" class="tabcontent">
