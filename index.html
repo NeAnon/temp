@@ -2,10 +2,12 @@
 <html>
 <head>
   <script type = "text/javascript">
-    
+    var fields;
+
     function openDefaultTab(){
      // Get the element with id="defaultOpen" and click on it  
       document.getElementById('defaultOpen').click();
+      fields = 1;
     }
 
     function openTab(evt, TabName) {
@@ -44,11 +46,42 @@
       document.body.removeChild(element);
     } 
 
+    function addField(){
+      //alert("Started...");
+      var count = parseInt(document.getElementById("varList").getAttribute('value'));
+      var varList = document.getElementById("varList");
+      //alert(count);
+      varList.setAttribute('value', count+1);
+      //alert("value saved! Current count: " + varList.getAttribute('value'));
+      element = document.createElement('input');
+      element.type = "text";
+      element.id= 'var'+(count);
+      element.size=10;
+      //alert("child created.");
+      var ref = varList.appendChild(element);
+
+      //alert("Child textbox added, id: " +(element.getAttribute('id')));
+      
+      linebreak = document.createElement("br");
+      varList.appendChild(linebreak);
+
+      alert(ref.id);
+      if(parseInt(varList.getAttribute('value')) > 2){
+        alert("More than 2 textboxes.");
+        alert("Textbox 3 contents: " + document.getElementById("var2").value);
+      }
+    }
+    
+    function findAndReplaceAll(templateText, ){
+
+    }
+
     function parseInputToText(templateText, input){
       returnString = templateText.replace('%s%', input);
       return returnString;
     }
     
+
   </script>
     
 </head>
@@ -64,12 +97,15 @@
   <!-- Tab content -->
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
-    <textarea id="vars"></textarea> <br>
+    <div id = "varList" value = '0'>
+    </div>
     <button onclick="download(getElementById('filenameInput').value, parseInputToText(getElementById('templateText').value, getElementById('vars').value));">Download</button>
   </div>
 
   <div id="Design" class="tabcontent">
     <h3>Design</h3>
+    <button onclick="addField();">Add field</button>
+    <button onclick="removeField();">Remove field</button>
   </div>
 
   <div id="Code" class="tabcontent">
