@@ -81,6 +81,10 @@
     function removeField(){
       var varList = document.getElementById("varList");
       //alert("varList located");
+      if(parseInt(varList.getAttribute('count')) <= 0){
+        alert("no textboxes to delete.")
+        return;
+      }
       varList.setAttribute('count', parseInt(varList.getAttribute('count'))-1)
       var targetId = 'var'+(parseInt(varList.getAttribute('count')))+'container';
       //alert("target's Id: " + targetId);
