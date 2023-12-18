@@ -48,10 +48,10 @@
 
     function addField(){
       //alert("Started...");
-      var count = parseInt(document.getElementById("varList").getAttribute('value'));
+      var count = parseInt(document.getElementById("varList").getAttribute('count'));
       var varList = document.getElementById("varList");
       //alert(count);
-      varList.setAttribute('value', count+1);
+      varList.setAttribute('count', count+1);
       //alert("value saved! Current count: " + varList.getAttribute('value'));
       element = document.createElement('input');
       element.type = "text";
@@ -66,10 +66,19 @@
       varList.appendChild(linebreak);
 
       alert(ref.id);
-      if(parseInt(varList.getAttribute('value')) > 2){
+      if(parseInt(varList.getAttribute('count')) > 2){
         alert("More than 2 textboxes.");
         alert("Textbox 3 contents: " + document.getElementById("var2").value);
       }
+    }
+
+    function removeField(){
+      var varList = document.getElementById("varList");
+      //alert("varList located");
+      var targetId = 'var'+(parseInt(varList.getAttribute('count'))-1);
+      //alert("target's Id: " + targetId);
+      document.getElementById(targetId).remove();
+      //alert("Target deleted.");
     }
     
     function findAndReplaceAll(templateText, ){
@@ -97,7 +106,7 @@
   <!-- Tab content -->
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
-    <div id = "varList" value = '0'>
+    <div id = "varList" count = '0'>
     </div>
     <button onclick="download(getElementById('filenameInput').value, parseInputToText(getElementById('templateText').value, getElementById('vars').value));">Download</button>
   </div>
