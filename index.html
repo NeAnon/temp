@@ -4,10 +4,15 @@
   <script type = "text/javascript">
     var fields;
 
-    function openDefaultTab(){
+    function initializePage(){
      // Get the element with id="defaultOpen" and click on it  
       document.getElementById('defaultOpen').click();
       fields = 1;
+
+	  if(document.getElementById('varImage').firstChild){
+		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
+		document.getElementById('varImage').removeChild(document.getElementById('varImage').firstChild);
+	  }
     }
 
     function openTab(evt, TabName) {
@@ -33,7 +38,7 @@
     }
 
     //I don't know if I should trust this function. I might switch over to FileSaver.js in case of compat issues.
-
+	//Update 03-01-2024 - Works so far. lmao.
     function download(filename, content) {
       var element = document.createElement('a');                                                      //Create a new element (a hyperlink to a file)
       element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(content));   //The file contents are of a plaintext type
@@ -67,10 +72,8 @@
       linebreak = document.createElement("br");
       newDiv.appendChild(linebreak);
       newDiv.setAttribute('posX', 0);
-      alert("Pos X: "+newDiv.getAttribute('posX'));
       newDiv.setAttribute('posY', 0);
       varList.append(newDiv);
-      alert("adding image...");
       addImage(newDiv.id);
       //alert(newDiv.posX);
 
@@ -122,33 +125,34 @@
       newImage.setAttribute('posX', sourceDiv.getAttribute('posX'));
       newImage.setAttribute('posY', sourceDiv.getAttribute('posY'));
       newImage.setAttribute('referenceId', sourceDiv.getAttribute('id'));
-      newImage.setAttribute('id', 'var0containerImage');
+      newImage.setAttribute('id', sourceDiv.id+'Image');
       
       newImage.appendChild(sourceDiv.firstChild.cloneNode(false));
       newImage.firstChild.setAttribute('id', sourceDiv.firstChild.id+'Image');
 
-      alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
+      //alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
       document.getElementById('varImage').appendChild(newImage);
-//      alert(newImage.id);
+		//alert(newImage.id);
     }
 
     function callAllImages(){
       alert('calling all images!');
       alert('To call: ' + document.getElementById('varList').getAttribute('count'));
-      for (let index = 0; index < document.getElementById('varList').getAttribute('count'); index++) {
-        //var workingElement = document.getElementById(('var'+index+'containerImage').toString);
-        var workingElement = document.getElementById('var0containerImage');
-        alert('calling ' + 'var'+index+'containerImage. type: ' + workingElement.type);
-        alert("element " + workingElement.getAttribute('id') + " exists." );
-        alert("\nposition X: " + workingElement.getAttribute('posX')+
-              "\nposition Y: " + workingElement.getAttribute('posY')+ 
-              "\nreferenced element: " + workingElement.getAttribute('referenceId'));
-      }
+	  let node = document.getElementById('varImage').firstChild;
+	  alert('first Node found');
+	  while(node){
+		alert("element " + node.id + " exists." );
+		alert("its type is " + node.nodeName);
+        alert("\nposition X: " + node.getAttribute('posX')+
+              "\nposition Y: " + node.getAttribute('posY')+ 
+              "\nreferenced element: " + node.getAttribute('referenceId'));
+		node = node.nextSibling;
+	  }
     }
   </script>
     
 </head>
-<body onload="openDefaultTab()">
+<body onload="initializePage()">
 
   <!-- Tab links -->
   <div class="tab">
@@ -170,9 +174,10 @@
     <h3>Design</h3>
     <button onclick="addField();">Add field</button>
     <button onclick="removeField();">Remove field</button>
-    <button onclick="callAllImages();">Call all var images</button>
+    <button onclick="callAllImages();">DEBUG: Call all var images</button>
     <div id = "varImage" class = "images">
-    </div>
+		
+	</div>
   </div>
 
   <div id="Code" class="tabcontent">
