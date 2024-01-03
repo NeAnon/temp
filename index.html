@@ -66,7 +66,13 @@
       
       linebreak = document.createElement("br");
       newDiv.appendChild(linebreak);
-      varList.appendChild(newDiv);
+      newDiv.setAttribute('posX', 0);
+      alert("Pos X: "+newDiv.getAttribute('posX'));
+      newDiv.setAttribute('posY', 0);
+      varList.append(newDiv);
+      alert("adding image...");
+      addImage(newDiv.id);
+      //alert(newDiv.posX);
 
       varList.setAttribute('count', count+1);
       /*
@@ -105,6 +111,40 @@
       return templateText;
     }    
 
+    function addImage(sourceDivId){
+      //Nooooo you can't just pass this shit directly, you have to do this funny
+      //fucking roundabout shit to read any values you set on a div
+      var sourceDiv = document.getElementById(sourceDivId);
+      newImage = document.createElement('div');
+      //newImage.setAttribute('referenceId', sourceDiv.id);
+      //newImage.setAttribute('id', sourceDiv.id + 'Image');
+      //IM LOSING MY FUCKInG MIND WITH THIS LANGUAGE WHY DOES EVERYTHING FAIL SILENTLY
+      newImage.setAttribute('posX', sourceDiv.getAttribute('posX'));
+      newImage.setAttribute('posY', sourceDiv.getAttribute('posY'));
+      newImage.setAttribute('referenceId', sourceDiv.getAttribute('id'));
+      newImage.setAttribute('id', 'var0containerImage');
+      
+      newImage.appendChild(sourceDiv.firstChild.cloneNode(false));
+      newImage.firstChild.setAttribute('id', sourceDiv.firstChild.id+'Image');
+
+      alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
+      document.getElementById('varImage').appendChild(newImage);
+//      alert(newImage.id);
+    }
+
+    function callAllImages(){
+      alert('calling all images!');
+      alert('To call: ' + document.getElementById('varList').getAttribute('count'));
+      for (let index = 0; index < document.getElementById('varList').getAttribute('count'); index++) {
+        //var workingElement = document.getElementById(('var'+index+'containerImage').toString);
+        var workingElement = document.getElementById('var0containerImage');
+        alert('calling ' + 'var'+index+'containerImage. type: ' + workingElement.type);
+        alert("element " + workingElement.getAttribute('id') + " exists." );
+        alert("\nposition X: " + workingElement.getAttribute('posX')+
+              "\nposition Y: " + workingElement.getAttribute('posY')+ 
+              "\nreferenced element: " + workingElement.getAttribute('referenceId'));
+      }
+    }
   </script>
     
 </head>
@@ -130,6 +170,9 @@
     <h3>Design</h3>
     <button onclick="addField();">Add field</button>
     <button onclick="removeField();">Remove field</button>
+    <button onclick="callAllImages();">Call all var images</button>
+    <div id = "varImage" class = "images">
+    </div>
   </div>
 
   <div id="Code" class="tabcontent">
