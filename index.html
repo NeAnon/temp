@@ -60,6 +60,7 @@
       //alert("value saved! Current count: " + varList.getAttribute('value'));
       newDiv = document.createElement('div');
       newDiv.id = 'var'+count+'container';
+	  newDiv.style.position = 'absolute';
 
       element = document.createElement('input');
       element.type = "text";
@@ -70,8 +71,8 @@
 
       //alert("Child textbox added, id: " +(element.getAttribute('id')));
       
-      linebreak = document.createElement("br");
-      newDiv.appendChild(linebreak);
+      //linebreak = document.createElement("br");
+      //newDiv.appendChild(linebreak);
       newDiv.setAttribute('posX', 0);
       newDiv.setAttribute('posY', 0);
       varList.append(newDiv);
@@ -98,6 +99,7 @@
       varList.setAttribute('count', parseInt(varList.getAttribute('count'))-1)
       var targetId = 'var'+(parseInt(varList.getAttribute('count')))+'container';
       //alert("target's Id: " + targetId);
+	  removeImage(targetId+'Image');
       document.getElementById(targetId).remove();
       //alert("Target deleted.");
     }
@@ -142,6 +144,10 @@
 	  addMouseEventHandlers(newImage.id);
     }
 
+	function removeImage(imageId){
+		document.getElementById(imageId).remove();
+	}
+
 	function addMouseEventHandlers(imageId){
 		//alert("Fetching element of id " + imageId);
 		var elem = document.getElementById(imageId);
@@ -169,6 +175,17 @@
 	}
 
 	function stopDrag(e){
+		let draggable = document.getElementById(draggedElement);
+		let origin = document.getElementById(draggable.getAttribute('referenceId'));
+
+		//Using the actual style values to get/set positions, since these are going to be the most accurate to the design appearance.
+		origin.setAttribute('posX', draggable.style.left);
+		origin.setAttribute('posY', draggable.style.top);
+
+		//set final positions
+		origin.style.left = origin.getAttribute('posX');
+		origin.style.top = origin.getAttribute('posY');
+
 		onmousemove = null;
 		onmouseup = null;
 		draggedElement = "";
