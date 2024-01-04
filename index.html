@@ -4,6 +4,8 @@
   <script type = "text/javascript">
     var fields;
 	var draggedElement;
+	var mouseDragOffsetX; mouseDragOffsetY;
+	var imageSetX; var imageSetY;
 
     function initializePage(){
      // Get the element with id="defaultOpen" and click on it  
@@ -152,7 +154,7 @@
 		//alert("Fetching element of id " + imageId);
 		var elem = document.getElementById(imageId);
 		//alert("adding mouse events to element " + elem.id + " of type " + elem.nodeName);
-		
+				
 		var node = elem.firstChild;
 		while(node){
 			node.addEventListener("mousedown", (e) => {e.preventDefault()});
@@ -160,17 +162,39 @@
 		}
 
 		elem.addEventListener("mousedown", (e) => {
+			draggedElement = elem.id;
 			onmousemove = dragElement;
 			onmouseup = stopDrag;
-			draggedElement = elem.id;
+			setOffsets(e);
 		})
 	}
+
+	function setOffsets(e){
+		var imageBoundingBox = document.getElementById('varImage').getBoundingClientRect();
+		var draggableBoundingBox = document.getElementById(draggedElement).getBoundingClientRect();
+		console.log('imageBoxX: ' + imageBoundingBox.x + ' imageBoxY: ' + imageBoundingBox.y);
+		mouseDragOffsetX = e.clientX - draggableBoundingBox.x;
+		mouseDragOffsetY = e.clientY - draggableBoundingBox.y;
+		imageSetX = imageBoundingBox.x;
+		imageSetY = imageBoundingBox.y;
+		console.log('MDOX: ' + mouseDragOffsetX + ' MDOY: ' + mouseDragOffsetY);
+	}
+
+	function imageRelativeX(boxLeft){
+		return boxLeft > imageSetX ? boxLeft : imageSetX ;
+	}
+	
+	function imageRelativeY(boxTop){
+		return boxTop > imageSetY ? boxTop : imageSetY;
+	}
+
 
 	function dragElement(e) {
 		e = e || window.event;
 		console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
-		document.getElementById(draggedElement).style.left = e.clientX + 'px';
-		document.getElementById(draggedElement).style.top = e.clientY + 'px';
+		console.log('Scroll dist: ' + window.pageXOffset + ' Y: ' + window.pageYOffset);
+		document.getElementById(draggedElement).style.left = imageRelativeX(e.clientX - mouseDragOffsetX + window.pageXOffset)+ 'px';
+		document.getElementById(draggedElement).style.top = imageRelativeY(e.clientY - mouseDragOffsetY + window.pageYOffset) + 'px';
 		//style.top = e.clientY +'px';
 	}
 
