@@ -7,18 +7,20 @@
 
 body {
   font-size: 14px;
+  background-color: #222222;
 }
   
-form * {
+input {
   display: block;
-  margin: 10px;
+  background-color: #b3b3b3;
+  border: 1px solid #000000;
 }
 
- /* Style the tab */
- .tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
+/* Style the tab */
+.tab {
+overflow: hidden;
+border: 1px solid #ccc;
+background-color: #f1f1f1;
 }
 
 /* Style the buttons that are used to open the tab content */
@@ -32,6 +34,7 @@ form * {
   transition: 0.3s;
 }
 
+
 /* Change background color of buttons on hover */
 .tab button:hover {
   background-color: #ddd;
@@ -39,7 +42,7 @@ form * {
 
 /* Create an active/current tablink class */
 .tab button.active {
-  background-color: #ccc;
+  background-color: #242424;
 }
 
 /* Style the tab content */
@@ -47,6 +50,7 @@ form * {
   display: none;
   padding: 6px 12px;
   border: 1px solid #a30000;
+  background: #838383;
   border-top: none;
 } 
 
