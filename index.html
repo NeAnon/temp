@@ -3,6 +3,7 @@
 <head>
   <script type = "text/javascript">
     var fields;
+	var draggedElement;
 
     function initializePage(){
      // Get the element with id="defaultOpen" and click on it  
@@ -117,7 +118,7 @@
     function addImage(sourceDivId){
       //Nooooo you can't just pass this shit directly, you have to do this funny
       //fucking roundabout shit to read any values you set on a div
-      var sourceDiv = document.getElementById(sourceDivId);
+      let sourceDiv = document.getElementById(sourceDivId);
       newImage = document.createElement('div');
       //newImage.setAttribute('referenceId', sourceDiv.id);
       //newImage.setAttribute('id', sourceDiv.id + 'Image');
@@ -127,13 +128,51 @@
       newImage.setAttribute('referenceId', sourceDiv.getAttribute('id'));
       newImage.setAttribute('id', sourceDiv.id+'Image');
       
+	  newImage.className = 'image';
+	  newImage.style.position = 'absolute';
+
       newImage.appendChild(sourceDiv.firstChild.cloneNode(false));
       newImage.firstChild.setAttribute('id', sourceDiv.firstChild.id+'Image');
 
+	  
       //alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
       document.getElementById('varImage').appendChild(newImage);
-		//alert(newImage.id);
+	  //alert(newImage.id);
+	  
+	  addMouseEventHandlers(newImage.id);
     }
+
+	function addMouseEventHandlers(imageId){
+		//alert("Fetching element of id " + imageId);
+		var elem = document.getElementById(imageId);
+		//alert("adding mouse events to element " + elem.id + " of type " + elem.nodeName);
+		
+		var node = elem.firstChild;
+		while(node){
+			node.addEventListener("mousedown", (e) => {e.preventDefault()});
+			node = node.nextSibling;
+		}
+
+		elem.addEventListener("mousedown", (e) => {
+			onmousemove = dragElement;
+			onmouseup = stopDrag;
+			draggedElement = elem.id;
+		})
+	}
+
+	function dragElement(e) {
+		e = e || window.event;
+		console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
+		document.getElementById(draggedElement).style.left = e.clientX + 'px';
+		document.getElementById(draggedElement).style.top = e.clientY + 'px';
+		//style.top = e.clientY +'px';
+	}
+
+	function stopDrag(e){
+		onmousemove = null;
+		onmouseup = null;
+		draggedElement = "";
+	}
 
     function callAllImages(){
       alert('calling all images!');
@@ -172,6 +211,7 @@
 
   <div id="Design" class="tabcontent">
     <h3>Design</h3>
+	<p>Now with draggable text boxes!</p>
     <button onclick="addField();">Add field</button>
     <button onclick="removeField();">Remove field</button>
     <button onclick="callAllImages();">DEBUG: Call all var images</button>

@@ -53,3 +53,7 @@ form * {
 .codeEntry textarea{
   font-family: monospace;
 }
+
+.image{
+  position: absolute;
+}
