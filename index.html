@@ -189,7 +189,6 @@
 		return boxTop > imageSetY ? boxTop : imageSetY;
 	}
 
-
 	function dragElement(e) {
 		e = e || window.event;
 		console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
@@ -230,7 +229,19 @@
 		node = node.nextSibling;
 	  }
     }
-  </script>
+	
+	function uploadImg(){
+		var img = document.createElement('img');
+		img.src = window.URL.createObjectURL(document.getElementById('image_source').files[0]);
+		img.width = 200;
+		var imageContainer = document.createElement('div');
+		imageContainer.id = 'newImgContainer';
+		imageContainer.appendChild(img);
+		document.getElementById('imageImage').appendChild(imageContainer);
+		//alert('success!');
+	} 
+
+	</script>
     
 </head>
 <body onload="initializePage()">
@@ -256,9 +267,14 @@
 	<p>Now with draggable text boxes!</p>
     <button onclick="addField();">Add field</button>
     <button onclick="removeField();">Remove field</button>
+    <input type="file" id="image_source" accept="image/" onchange="uploadImg();"/>
+    <button onclick="removeImgs();">Remove images</button>
     <button onclick="callAllImages();">DEBUG: Call all var images</button>
     <div id = "varImage" class = "images">
 		
+	</div>
+	<div id = "imageImage" class = "images">
+
 	</div>
   </div>
 
