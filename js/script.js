@@ -2,6 +2,7 @@ var fields;
 var draggedElement;
 var mouseDragOffsetX; var mouseDragOffsetY;
 var imageSetX; var imageSetY;
+var contextMenuTarget;
 
 function initializePage(){
 	// Get the element with id="defaultOpen" and click on it  
@@ -239,7 +240,9 @@ function uploadImg(){
 	document.getElementById('imageImage').appendChild(imageContainer);
 	//alert('success!');
 } 
-
+/**************************************************************************************** */
+//										
+/**************************************************************************************** */
 
 function customContextMenu(e){
 	e.preventDefault();
@@ -248,14 +251,44 @@ function customContextMenu(e){
 	contextMenu.style.left = adjustCursorOffsetX(e.clientX) + 'px';
 	contextMenu.style.top = adjustCursorOffsetY(e.clientY) + 'px';
 	contextMenu.style.visibility = "visible";
+	contextMenuTarget = e.target;
 
+	//Context menu options. contextMenuTarget determines the right-clicked element
+	if(e.target.nodeName.toLowerCase() == "input"){
+		//console.log('input field clicked');
+		elem = document.createElement("button");
+		elem.innerText = "Change width of input field";
+		elem.addEventListener('click', (e)=>{
+			//I'll make this better later I promise (lies)
+			inputLength = parseInt(prompt("Character length of input field: ", contextMenuTarget.size));
+			contextMenuTarget.size = inputLength;
+			relatedInput(contextMenuTarget.id);
+			document.getElementById(relatedInput(contextMenuTarget.id)).size = inputLength;
+		});
+		contextMenu.appendChild(elem);
+	}
+
+
+	//Remove context menu on clicking away
 	document.addEventListener("mousedown", (e) => {
 		if(contextMenu.getBoundingClientRect().x > e.clientX || contextMenu.getBoundingClientRect().x + contextMenu.getBoundingClientRect().width < e.clientX)
-		{contextMenu.style.visibility = 'hidden';} //x within box check
+		{contextMenu.style.visibility = 'hidden'; destroyAllContextMenuOptions();} //x within box check
 		else if(contextMenu.getBoundingClientRect().y > e.clientY || contextMenu.getBoundingClientRect().y + contextMenu.getBoundingClientRect().height < e.clientY)
-		{contextMenu.style.visibility = 'hidden';} //y within box check
-		document.onmousedown = null;
+		{contextMenu.style.visibility = 'hidden'; destroyAllContextMenuOptions();} //y within box check
 	});
+}
+
+function relatedInput(inImageId){
+	return document.getElementById(document.getElementById(inImageId).parentElement.getAttribute('referenceId')).firstChild.id;
+}
+
+function destroyAllContextMenuOptions(){
+	cmenu = document.getElementById("contextMenu");
+	node = contextMenu.firstChild;
+	while(node){
+		cmenu.removeChild(node);
+		node = contextMenu.firstChild;
+	}
 }
 
 
