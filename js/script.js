@@ -1,6 +1,6 @@
 var fields;
 var draggedElement;
-var mouseDragOffsetX; mouseDragOffsetY;
+var mouseDragOffsetX; var mouseDragOffsetY;
 var imageSetX; var imageSetY;
 
 function initializePage(){
@@ -12,6 +12,7 @@ function initializePage(){
 		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
 		document.getElementById('varImage').removeChild(document.getElementById('varImage').firstChild);
 	}
+	document.addEventListener("contextmenu", (e) => {e.preventDefault()});
 }
 
 function openTab(evt, TabName) {
@@ -156,6 +157,8 @@ function addMouseEventHandlers(imageId){
 		onmouseup = stopDrag;
 		setOffsets(e);
 	})
+
+	elem.addEventListener("contextmenu", customContextMenu);
 }
 
 function setOffsets(e){
@@ -177,12 +180,20 @@ function imageRelativeY(boxTop){
 	return boxTop > imageSetY ? boxTop : imageSetY;
 }
 
+function adjustCursorOffsetX(cursorX){
+	return cursorX + window.pageXOffset;
+}
+
+function adjustCursorOffsetY(cursorY){
+	return cursorY + window.pageYOffset;
+}
+
 function dragElement(e) {
 	e = e || window.event;
 	console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
 	console.log('Scroll dist: ' + window.pageXOffset + ' Y: ' + window.pageYOffset);
-	document.getElementById(draggedElement).style.left = imageRelativeX(e.clientX - mouseDragOffsetX + window.pageXOffset)+ 'px';
-	document.getElementById(draggedElement).style.top = imageRelativeY(e.clientY - mouseDragOffsetY + window.pageYOffset) + 'px';
+	document.getElementById(draggedElement).style.left = imageRelativeX(adjustCursorOffsetX(e.clientX - mouseDragOffsetX))+ 'px';
+	document.getElementById(draggedElement).style.top = imageRelativeY(adjustCursorOffsetY(e.clientY - mouseDragOffsetY)) + 'px';
 	//style.top = e.clientY +'px';
 }
 
@@ -228,3 +239,25 @@ function uploadImg(){
 	document.getElementById('imageImage').appendChild(imageContainer);
 	//alert('success!');
 } 
+
+
+function customContextMenu(e){
+	e.preventDefault();
+	//alert("Brought up context menu of " + e.target.nodeName + " type element.");
+	contextMenu = document.getElementById("contextMenu");
+	contextMenu.style.left = adjustCursorOffsetX(e.clientX) + 'px';
+	contextMenu.style.top = adjustCursorOffsetY(e.clientY) + 'px';
+	contextMenu.style.visibility = "visible";
+
+	document.addEventListener("mousedown", (e) => {
+		if(contextMenu.getBoundingClientRect().x > e.clientX || contextMenu.getBoundingClientRect().x + contextMenu.getBoundingClientRect().width < e.clientX)
+		{contextMenu.style.visibility = 'hidden';} //x within box check
+		else if(contextMenu.getBoundingClientRect().y > e.clientY || contextMenu.getBoundingClientRect().y + contextMenu.getBoundingClientRect().height < e.clientY)
+		{contextMenu.style.visibility = 'hidden';} //y within box check
+		document.onmousedown = null;
+	});
+}
+
+
+
+
