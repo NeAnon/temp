@@ -9,11 +9,11 @@ function initializePage(){
 	document.getElementById('defaultOpen').click();
 	fields = 1;
 
-	if(document.getElementById('varImage').firstChild){
+	if(document.getElementById('inputImages').firstChild){
 		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
-		document.getElementById('varImage').removeChild(document.getElementById('varImage').firstChild);
+		document.getElementById('inputImages').removeChild(document.getElementById('inputImages').firstChild);
 	}
-	document.addEventListener("contextmenu", (e) => {e.preventDefault()});
+	document.addEventListener("contextmenu", (e) => {e.preventDefault();});
 }
 
 function openTab(evt, TabName) {
@@ -131,7 +131,7 @@ function addImage(sourceDivId){
 
 	
 	//alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
-	document.getElementById('varImage').appendChild(newImage);
+	document.getElementById('inputImages').appendChild(newImage);
 	//alert(newImage.id);
 	
 	addMouseEventHandlers(newImage.id);
@@ -143,10 +143,10 @@ function removeImage(imageId){
 
 function addMouseEventHandlers(imageId){
 	//alert("Fetching element of id " + imageId);
-	var elem = document.getElementById(imageId);
+	let elem = document.getElementById(imageId);
 	//alert("adding mouse events to element " + elem.id + " of type " + elem.nodeName);
 	
-	var node = elem.firstChild;
+	let node = elem.firstChild;
 	while(node){
 		node.addEventListener("mousedown", (e) => {e.preventDefault()});
 		node = node.nextSibling;
@@ -163,7 +163,7 @@ function addMouseEventHandlers(imageId){
 }
 
 function setOffsets(e){
-	var imageBoundingBox = document.getElementById('varImage').getBoundingClientRect();
+	var imageBoundingBox = document.getElementById('inputImages').getBoundingClientRect();
 	var draggableBoundingBox = document.getElementById(draggedElement).getBoundingClientRect();
 	console.log('imageBoxX: ' + imageBoundingBox.x + ' imageBoxY: ' + imageBoundingBox.y);
 	mouseDragOffsetX = e.clientX - draggableBoundingBox.x;
@@ -182,15 +182,14 @@ function imageRelativeY(boxTop){
 }
 
 function adjustCursorOffsetX(cursorX){
-	return cursorX + window.pageXOffset;
+	return cursorX + window.scrollX;
 }
 
 function adjustCursorOffsetY(cursorY){
-	return cursorY + window.pageYOffset;
+	return cursorY + window.scrollY;
 }
 
 function dragElement(e) {
-	e = e || window.event;
 	console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
 	console.log('Scroll dist: ' + window.pageXOffset + ' Y: ' + window.pageYOffset);
 	document.getElementById(draggedElement).style.left = imageRelativeX(adjustCursorOffsetX(e.clientX - mouseDragOffsetX))+ 'px';
@@ -218,7 +217,7 @@ function stopDrag(e){
 function callAllImages(){
 	alert('calling all images!');
 	alert('To call: ' + document.getElementById('varList').getAttribute('count'));
-	let node = document.getElementById('varImage').firstChild;
+	let node = document.getElementById('inputImages').firstChild;
 	alert('first Node found');
 	while(node){
 		alert("element " + node.id + " exists." );
@@ -237,7 +236,7 @@ function uploadImg(){
 	var imageContainer = document.createElement('div');
 	imageContainer.id = 'newImgContainer';
 	imageContainer.appendChild(img);
-	document.getElementById('imageImage').appendChild(imageContainer);
+	document.getElementById('visualImages').appendChild(imageContainer);
 	//alert('success!');
 } 
 /**************************************************************************************** */
@@ -255,19 +254,34 @@ function customContextMenu(e){
 
 	//Context menu options. contextMenuTarget determines the right-clicked element
 	if(e.target.nodeName.toLowerCase() == "input"){
-		//console.log('input field clicked');
-		elem = document.createElement("button");
+		//width changed for default text input fields
+		let elem = document.createElement("button");
 		elem.innerText = "Change width of input field";
 		elem.addEventListener('click', (e)=>{
 			//I'll make this better later I promise (lies)
 			inputLength = parseInt(prompt("Character length of input field: ", contextMenuTarget.size));
 			contextMenuTarget.size = inputLength;
-			relatedInput(contextMenuTarget.id);
+//			relatedInput(contextMenuTarget.id);
 			document.getElementById(relatedInput(contextMenuTarget.id)).size = inputLength;
 		});
 		contextMenu.appendChild(elem);
 	}
 
+	//Deletion (this should probably be on the bottom of the stack)
+	let elem = document.createElement("button");
+	elem.innerText = "Delete";
+	elem.addEventListener('click', (e) => {
+		if(!e.shiftKey && !confirm("Are you sure?")){
+			return;
+		}
+		else{
+			document.getElementById(relatedInput(contextMenuTarget.id)).parentElement.remove();
+			contextMenuTarget.parentElement.remove();
+			contextMenu.style.visibility = "hidden";
+		}
+	})
+	elem.style.color = '#aa0000';
+	contextMenu.appendChild(elem);
 
 	//Remove context menu on clicking away
 	document.addEventListener("mousedown", (e) => {
@@ -279,6 +293,7 @@ function customContextMenu(e){
 }
 
 function relatedInput(inImageId){
+	if(document.getElementById(inImageId).parentElement.getAttribute('referenceId') == null){ return; }
 	return document.getElementById(document.getElementById(inImageId).parentElement.getAttribute('referenceId')).firstChild.id;
 }
 
