@@ -12,12 +12,14 @@
     <button class="tabs" onclick="openTab(event, 'Fill')" >Fill</button>
     <button class="tabs" onclick="openTab(event, 'Design')" id="defaultOpen">Design</button>
     <button class="tabs" onclick="openTab(event, 'Code')">Code</button>
+
+    <label class="tabs">Template Creator <br> by Nean <br> v0.1</label>
   </div>
 
   <!-- Tab content -->
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
-    <div id = "varList" count = '0'>
+    <div id = "inputList" count = '0'>
     </div>
     <button onclick="download(findAndReplaceAll(getElementById('filenameInput').value), findAndReplaceAll(getElementById('templateText').value));">Download</button> <br/>
     <!-- <button onclick="findAndReplaceAll(getElementById('templateText').value);">Parse test</button> <br/> -->
@@ -27,7 +29,6 @@
     <h3>Design</h3>
 	<p>Now with draggable text boxes!</p>
     <button onclick="addField();">Add field</button>
-    <button onclick="removeField();">Remove field</button>
     <input type="file" id="image_source" accept="image/" onchange="uploadImg();"/>
     <button onclick="removeImgs();">Remove images</button>
     <button onclick="callAllImages();">DEBUG: Call all var images</button>

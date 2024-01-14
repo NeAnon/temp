@@ -34,6 +34,10 @@ background-color: #f1f1f1;
   transition: 0.3s;
 }
 
+.tab label{
+  float: right;
+  text-align: right;
+}
 
 /* Change background color of buttons on hover */
 .tab button:hover {
@@ -60,11 +64,12 @@ background-color: #f1f1f1;
 
 .conmenu {
   position: absolute;
-  background-color: #000000;
+  background-color: #646464;
   width: 200px;
   visibility: hidden;
   border: 1px solid #1d1d1d;
   border-bottom: 1px solid #1d1d1d;
+  overflow: hidden;
   /* opacity: 80%; */
 }
 
@@ -75,6 +80,7 @@ background-color: #f1f1f1;
   width: inherit;
   text-align: left;
   padding-left: 3px;
+  padding-right: 3px;
   border-bottom: inherit;
   opacity:inherit;
 }

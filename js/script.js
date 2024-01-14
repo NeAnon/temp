@@ -9,9 +9,13 @@ function initializePage(){
 	document.getElementById('defaultOpen').click();
 	fields = 1;
 
-	if(document.getElementById('inputImages').firstChild){
+	while(document.getElementById('inputImages').firstChild){
 		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
 		document.getElementById('inputImages').removeChild(document.getElementById('inputImages').firstChild);
+	}
+	while(document.getElementById('inputList').firstChild){
+		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
+		document.getElementById('inputList').removeChild(document.getElementById('inputList').firstChild);
 	}
 	document.addEventListener("contextmenu", (e) => {e.preventDefault();});
 }
@@ -54,15 +58,17 @@ function download(filename, content) {
 
 function addField(){
 	//alert("Started...");
-	var varList = document.getElementById("varList");
-	var count = parseInt(varList.getAttribute('count'));
+	var varList = document.getElementById("inputList");
+	var count = 0;
 	//alert(count);
 	//alert("value saved! Current count: " + varList.getAttribute('value'));
 	newDiv = document.createElement('div');
+	//Find a free id
+	while(document.getElementById('var' + count + 'container') != null){count++;}
 	newDiv.id = 'var'+count+'container';
 	newDiv.style.position = 'absolute';
 
-	element = document.createElement('input');
+	let element = document.createElement('input');
 	element.type = "text";
 	element.id= 'var'+(count);
 	element.size=10;
@@ -79,32 +85,21 @@ function addField(){
 	addImage(newDiv.id);
 	//alert(newDiv.posX);
 
-	varList.setAttribute('count', count+1);
 }
 
-function removeField(){
-	var varList = document.getElementById("varList");
-	//alert("varList located");
-	if(parseInt(varList.getAttribute('count')) <= 0){
-		alert("no textboxes to delete.")
-		return;
-	}
-	varList.setAttribute('count', parseInt(varList.getAttribute('count'))-1)
-	var targetId = 'var'+(parseInt(varList.getAttribute('count')))+'container';
-	//alert("target's Id: " + targetId);
-	removeImage(targetId+'Image');
-	document.getElementById(targetId).remove();
-	//alert("Target deleted.");
-}
 
+//This all needs to be reworked!!
 function findAndReplaceAll(templateText){
-	var varCount = parseInt(document.getElementById("varList").getAttribute('count'));
+	let varList = document.getElementById('inputList');
+	let currnode = varList.firstChild;
 	//alert(varCount);
-	for(var i = 0; i < varCount; i++){
-		//alert("replacing %"+i+"% with var"+i);
-		//alert("textbox value: " + document.getElementById('var'+i).value);
-		templateText = templateText.replaceAll('%'+i+'%', document.getElementById('var'+i).value);
+	while(currnode){
+		console.log(currnode.nodeName);
+		let varName = currnode.firstChild.id.substring(3);
+		console.log(varName);
+		templateText = templateText.replaceAll('%'+varName+'%', document.getElementById('var'+varName).value);
 		//alert("Success!");
+		currnode = currnode.nextSibling;
 	}
 	//alert(templateText);
 	return templateText;
@@ -128,6 +123,8 @@ function addImage(sourceDivId){
 
 	newImage.appendChild(sourceDiv.firstChild.cloneNode(false));
 	newImage.firstChild.setAttribute('id', sourceDiv.firstChild.id+'Image');
+	newImage.firstChild.value = 	sourceDiv.firstChild.id.substring(3);
+	newImage.firstChild.style.color = 'rgba(0,0,0,0)';
 
 	
 	//alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
@@ -216,7 +213,6 @@ function stopDrag(e){
 
 function callAllImages(){
 	alert('calling all images!');
-	alert('To call: ' + document.getElementById('varList').getAttribute('count'));
 	let node = document.getElementById('inputImages').firstChild;
 	alert('first Node found');
 	while(node){
@@ -259,10 +255,33 @@ function customContextMenu(e){
 		elem.innerText = "Change width of input field";
 		elem.addEventListener('click', (e)=>{
 			//I'll make this better later I promise (lies)
-			inputLength = parseInt(prompt("Character length of input field: ", contextMenuTarget.size));
+			let inputLength = parseInt(prompt("Character length of input field: ", contextMenuTarget.size));
 			contextMenuTarget.size = inputLength;
-//			relatedInput(contextMenuTarget.id);
+			//relatedInput(contextMenuTarget.id);
 			document.getElementById(relatedInput(contextMenuTarget.id)).size = inputLength;
+		});
+		contextMenu.appendChild(elem);
+	}
+	if(e.target.nodeName.toLowerCase() == "input"){
+		//width changed for default text input fields
+		let elem = document.createElement("button");
+		elem.innerText = "Rename referenced variable";
+		elem.addEventListener('click', (e)=>{
+			// 			The 'getElementById().id' is necessary. Otherwise the page has no idea what the return type is (and we ensure the object actually exists).
+			let newVarName = prompt("New variable name: ", document.getElementById(relatedInput(contextMenuTarget.id)).id.substring(3)/*'var'.length()*/);
+			if(newVarName!=null){
+				rebind(contextMenuTarget.id, newVarName);
+			}
+			contextMenu.style.visibility = "hidden";
+		});
+		contextMenu.appendChild(elem);
+	}
+	if(e.target.nodeName.toLowerCase() == "input"){
+		//Toggle variable name visibility
+		let elem = document.createElement("button");
+		elem.innerText = "Toggle variable name visibility";
+		elem.addEventListener('click', (e)=>{
+			contextMenuTarget.style.color = (contextMenuTarget.style.color == 'rgba(0, 0, 0, 0)' ? 'rgba(0, 0, 0)' : 'rgba(0, 0, 0, 0)');
 		});
 		contextMenu.appendChild(elem);
 	}
@@ -303,6 +322,21 @@ function destroyAllContextMenuOptions(){
 	while(node){
 		cmenu.removeChild(node);
 		node = contextMenu.firstChild;
+	}
+}
+
+function rebind(inputId, newTag){
+	if(document.getElementById('var'+newTag)){
+		alert("An input field with this tag already exists!");
+		return;
+	}
+	else{
+		document.getElementById(relatedInput(inputId)).id = 'var'+newTag;
+		document.getElementById(relatedInput(inputId)).parentElement.id = 'var'+newTag+'container';
+		document.getElementById(inputId).parentElement.setAttribute('referenceId', 'var'+newTag+'container');
+		document.getElementById(inputId).parentElement.id = 'var'+newTag+'containerImage';
+		document.getElementById(inputId).value = newTag;
+		document.getElementById(inputId).id = 'var'+newTag+'Image'
 	}
 }
 
