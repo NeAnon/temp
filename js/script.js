@@ -273,6 +273,7 @@ function customContextMenu(e){
 				rebind(contextMenuTarget.id, newVarName);
 			}
 			contextMenu.style.visibility = "hidden";
+			destroyAllContextMenuOptions();
 		});
 		contextMenu.appendChild(elem);
 	}
@@ -297,6 +298,7 @@ function customContextMenu(e){
 			document.getElementById(relatedInput(contextMenuTarget.id)).parentElement.remove();
 			contextMenuTarget.parentElement.remove();
 			contextMenu.style.visibility = "hidden";
+			destroyAllContextMenuOptions();
 		}
 	})
 	elem.style.color = '#aa0000';
@@ -326,6 +328,10 @@ function destroyAllContextMenuOptions(){
 }
 
 function rebind(inputId, newTag){
+	if(newTag == ""){
+		alert("The variable name cannot be empty!");
+		return;
+	}
 	if(document.getElementById('var'+newTag)){
 		alert("An input field with this tag already exists!");
 		return;
