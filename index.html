@@ -28,10 +28,17 @@
   <div id="Design" class="tabcontent">
     <h3>Design</h3>
 	<p>Now with draggable text boxes!</p>
-    <button onclick="addField();">Add field</button>
-    <input type="file" id="image_source" accept="image/" onchange="uploadImg();"/>
-    <button onclick="removeImgs();">Remove images</button>
-    <button onclick="callAllImages();">DEBUG: Call all var images</button>
+  <div id = 'controls' class="controls">
+    <div id = 'addButtons' class="buttonField">
+      <button onclick="addField();">Add field</button>
+      <input type="file" id="image_source" accept="image/" onchange="uploadImg();"/>
+      <button onclick="removeImgs();">Remove images</button>
+      <button onclick="callAllImages();">DEBUG: Call all var images</button>
+    </div>
+    <div id = 'componentControls' class="cssField">
+
+    </div>
+  </div>
     <div id = "inputImages" class = "images">
  
     </div>     

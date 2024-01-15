@@ -58,6 +58,40 @@ background-color: #f1f1f1;
   border-top: none;
 } 
 
+.controls{
+  display: flex;
+  height: max-content;
+}
+
+.buttonField{
+  display: inline-block;
+  position: static;
+  width: fit-content;
+  height: fit-content;
+}
+
+.cssField{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  padding-left: 3px;
+  max-height: 200px;
+}
+
+.cssField div{
+  /* display: inline; */
+  min-width: fit-content;
+  box-sizing: border-box;
+align-items: left;
+}
+
+.cssField div input{
+  display: inline;
+}
+.cssField div label{
+  display: inline;
+}
+
 .codeEntry textarea{
   font-family: monospace;
 }

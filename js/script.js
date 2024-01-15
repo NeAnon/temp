@@ -1,5 +1,5 @@
 var fields;
-var draggedElement;
+var draggedElement;	var trackedElement;
 var mouseDragOffsetX; var mouseDragOffsetY;
 var imageSetX; var imageSetY;
 var contextMenuTarget;
@@ -151,11 +151,15 @@ function addMouseEventHandlers(imageId){
 
 	elem.addEventListener("mousedown", (e) => {
 		draggedElement = elem.id;
+		if(trackedElement != elem.id){
+			openStyleMenu();
+		}
+		trackedElement = elem.id;
 		onmousemove = dragElement;
 		onmouseup = stopDrag;
 		setOffsets(e);
+		document.addEventListener("mousedown", checkClick);
 	})
-
 	elem.addEventListener("contextmenu", customContextMenu);
 }
 
@@ -346,6 +350,40 @@ function rebind(inputId, newTag){
 	}
 }
 
+function openStyleMenu(){
+	addAttrTracker('left');
+	addAttrTracker('top');
+}
 
+function addAttrTracker(value){
+	let attributes = document.getElementById('componentControls');
+	let wrapper = document.createElement('div');
+	let elem = document.createElement('input');
+	elem.id = value + 'Tracker';
+	let label = document.createElement('label');
+	label.setAttribute('for', elem.id);
+	label.innerText = formatAttrLabel(value);	
+	attributes.appendChild(wrapper);
+	wrapper.appendChild(label);
+	wrapper.appendChild(elem);
+}
 
+function formatAttrLabel(label){
+	return label[0].toUpperCase() + label.substring(1) + ': ';
+}
 
+function closeStyleMenu(){
+	console.log('Style menu closed!');
+	let controls = document.getElementById('componentControls');
+	while(controls.firstChild){
+		controls.firstChild.remove();
+	}
+}
+
+function checkClick(e){
+	let elementBoundingBox = document.getElementById(trackedElement).getBoundingClientRect();
+	if(elementBoundingBox.x > e.clientX || elementBoundingBox.x + elementBoundingBox.width < e.clientX)
+	{trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);} //x within box check
+	else if(elementBoundingBox.y > e.clientY || elementBoundingBox.y + elementBoundingBox.height < e.clientY)
+	{trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);} //y within box check)
+}
