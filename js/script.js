@@ -160,6 +160,7 @@ function addMouseEventHandlers(imageId){
 		onmouseup = stopDrag;
 		setOffsets(e);
 		updateStyleMenu();
+		setManualStyleUpdateEvents();
 		document.addEventListener("mousedown", checkClick);
 	})
 	elem.addEventListener("contextmenu", customContextMenu);
@@ -176,6 +177,7 @@ function setOffsets(e){
 	console.log('MDOX: ' + mouseDragOffsetX + ' MDOY: ' + mouseDragOffsetY);
 }
 
+//Checks whether the box is within the space for var and visual images. I have no idea why this was picked as the name for such a check
 function imageRelativeX(boxLeft){
 	return boxLeft > imageSetX ? boxLeft : imageSetX ;
 }
@@ -357,6 +359,15 @@ function openStyleMenu(){
 	addAttrTracker('top', 'px');
 }
 
+function setManualStyleUpdateEvents(){
+	document.getElementById('leftTracker').addEventListener('input', (e) => {
+		document.getElementById(trackedElement).style.left = ((document.getElementById('leftTracker').value > imageSetX) ? document.getElementById('leftTracker').value : imageSetX) + 'px';
+	});
+	document.getElementById('topTracker').addEventListener('input', (e) => {
+		document.getElementById(trackedElement).style.top = ((document.getElementById('topTracker').value > imageSetY) ? document.getElementById('topTracker').value : imageSetY) + 'px';
+	});
+}
+
 //Since the element style fields are mostly for universal attributes, these can be hardcoded instead of having to play around with evals
 function updateStyleMenu(){
 	//Record the x/y of the element within the page and cut off the 'px' at the end.
@@ -403,10 +414,13 @@ function closeStyleMenu(){
 
 function checkClick(e){
 	let elementBoundingBox = document.getElementById(trackedElement).getBoundingClientRect();
-	if(elementBoundingBox.x > e.clientX || elementBoundingBox.x + elementBoundingBox.width < e.clientX)
-	{stopTracking();} //x within box check
-	else if(elementBoundingBox.y > e.clientY || elementBoundingBox.y + elementBoundingBox.height < e.clientY)
-	{stopTracking();} //y within box check
+	let styleBoundingBox = document.getElementById('componentControls').getBoundingClientRect();
+	if(	(elementBoundingBox.x > e.clientX || elementBoundingBox.x + elementBoundingBox.width < e.clientX) && 
+		(styleBoundingBox.x > e.clientX || styleBoundingBox.x + styleBoundingBox.width < e.clientX))
+	{stopTracking();} //x within box check (both selected element and css-field)
+	else if((elementBoundingBox.y > e.clientY || elementBoundingBox.y + elementBoundingBox.height < e.clientY) && 
+			(styleBoundingBox.y > e.clientY || styleBoundingBox.y + styleBoundingBox.height < e.clientY))
+	{stopTracking();} //y within box check (both selected element and css-field)
 }
 
 function stopTracking(){
