@@ -106,13 +106,10 @@ function findAndReplaceAll(templateText){
 }    
 
 function addImage(sourceDivId){
-	//Nooooo you can't just pass this shit directly, you have to do this funny
-	//fucking roundabout shit to read any values you set on a div
 	let sourceDiv = document.getElementById(sourceDivId);
 	newImage = document.createElement('div');
 	//newImage.setAttribute('referenceId', sourceDiv.id);
 	//newImage.setAttribute('id', sourceDiv.id + 'Image');
-	//IM LOSING MY FUCKInG MIND WITH THIS LANGUAGE WHY DOES EVERYTHING FAIL SILENTLY
 	newImage.setAttribute('posX', sourceDiv.getAttribute('posX'));
 	newImage.setAttribute('posY', sourceDiv.getAttribute('posY'));
 	newImage.setAttribute('referenceId', sourceDiv.getAttribute('id'));
@@ -152,9 +149,11 @@ function addMouseEventHandlers(imageId){
 	elem.addEventListener("mousedown", (e) => {
 		draggedElement = elem.id;
 		if(trackedElement != elem.id){
+			stopTracking();
 			openStyleMenu();
 		}
 		trackedElement = elem.id;
+		document.getElementById(trackedElement).style.border = '2px solid #ff0000';
 		onmousemove = dragElement;
 		onmouseup = stopDrag;
 		setOffsets(e);
@@ -383,7 +382,12 @@ function closeStyleMenu(){
 function checkClick(e){
 	let elementBoundingBox = document.getElementById(trackedElement).getBoundingClientRect();
 	if(elementBoundingBox.x > e.clientX || elementBoundingBox.x + elementBoundingBox.width < e.clientX)
-	{trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);} //x within box check
+	{stopTracking();} //x within box check
 	else if(elementBoundingBox.y > e.clientY || elementBoundingBox.y + elementBoundingBox.height < e.clientY)
-	{trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);} //y within box check)
+	{stopTracking();} //y within box check
+}
+
+function stopTracking(){
+	if(!trackedElement){return;}
+	document.getElementById(trackedElement).style.border = 0; trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);
 }
