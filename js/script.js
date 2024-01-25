@@ -1,6 +1,8 @@
 var fields;
 var draggedElement;	var trackedElement;
+//Offsets for when an element is pressed
 var mouseDragOffsetX; var mouseDragOffsetY;
+//The bounding box of the image setting field - limits how far left or up an image can be dragged. (image in this case being a reflection of an element on the 'fill' screen)
 var imageSetX; var imageSetY;
 var contextMenuTarget;
 
@@ -153,10 +155,11 @@ function addMouseEventHandlers(imageId){
 			openStyleMenu();
 		}
 		trackedElement = elem.id;
-		document.getElementById(trackedElement).style.border = '2px solid #ff0000';
+		document.getElementById(trackedElement).style.outline = '2px solid #ff0000';
 		onmousemove = dragElement;
 		onmouseup = stopDrag;
 		setOffsets(e);
+		updateStyleMenu();
 		document.addEventListener("mousedown", checkClick);
 	})
 	elem.addEventListener("contextmenu", customContextMenu);
@@ -191,9 +194,9 @@ function adjustCursorOffsetY(cursorY){
 
 function dragElement(e) {
 	console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
-	console.log('Scroll dist: ' + window.pageXOffset + ' Y: ' + window.pageYOffset);
 	document.getElementById(draggedElement).style.left = imageRelativeX(adjustCursorOffsetX(e.clientX - mouseDragOffsetX))+ 'px';
 	document.getElementById(draggedElement).style.top = imageRelativeY(adjustCursorOffsetY(e.clientY - mouseDragOffsetY)) + 'px';
+	updateStyleMenu();
 	//style.top = e.clientY +'px';
 }
 
@@ -350,11 +353,24 @@ function rebind(inputId, newTag){
 }
 
 function openStyleMenu(){
-	addAttrTracker('left');
-	addAttrTracker('top');
+	addAttrTracker('left', 'px');
+	addAttrTracker('top', 'px');
 }
 
-function addAttrTracker(value){
+//Since the element style fields are mostly for universal attributes, these can be hardcoded instead of having to play around with evals
+function updateStyleMenu(){
+	//Record the x/y of the element within the page and cut off the 'px' at the end.
+	let leftval = document.getElementById(trackedElement).style.left.substring(0, document.getElementById(trackedElement).style.left.length-2);
+	leftval = leftval ? leftval : imageSetX + '';
+	document.getElementById('leftTracker').value = leftval;
+	document.getElementById('leftTracker').size = leftval.length+1;	//Not necessary, but it looks a little better without the massive empty space at the end of the input field.
+	let topVal = document.getElementById(trackedElement).style.top.substring(0, document.getElementById(trackedElement).style.top.length-2);
+	topVal = topVal ? topVal : imageSetY + '';
+	document.getElementById('topTracker').value = topVal;
+	document.getElementById('topTracker').size = topVal.length+1;
+}
+
+function addAttrTracker(value, unit = ''){
 	let attributes = document.getElementById('componentControls');
 	let wrapper = document.createElement('div');
 	let elem = document.createElement('input');
@@ -365,6 +381,12 @@ function addAttrTracker(value){
 	attributes.appendChild(wrapper);
 	wrapper.appendChild(label);
 	wrapper.appendChild(elem);
+	if(unit){
+		let unitLabel = document.createElement('label');
+		unitLabel.setAttribute('for', elem.id);
+		unitLabel.innerText = ' ' + unit;	
+		wrapper.appendChild(unitLabel);
+	}
 }
 
 function formatAttrLabel(label){
@@ -389,5 +411,5 @@ function checkClick(e){
 
 function stopTracking(){
 	if(!trackedElement){return;}
-	document.getElementById(trackedElement).style.border = 0; trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);
+	document.getElementById(trackedElement).style.outline = 0; trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);
 }
