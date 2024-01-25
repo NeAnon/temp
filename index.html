@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- Needed to get rid of that one annoying 'favicon.ico not found' message -->
+<link rel="shortcut icon" href="favicon/favicon.ico"> 
 <link rel="stylesheet" href="style.css" type="text/css">
 <script type = "text/javascript" src = "js/script.js"> </script>
     
@@ -21,6 +23,8 @@
     <h3>Fill</h3>
     <div id = "inputList" count = '0'>
     </div>
+    <div id = "visualsList" count = '0'>
+    </div>
     <button onclick="download(findAndReplaceAll(getElementById('filenameInput').value), findAndReplaceAll(getElementById('templateText').value));">Download</button> <br/>
     <!-- <button onclick="findAndReplaceAll(getElementById('templateText').value);">Parse test</button> <br/> -->
   </div>
@@ -30,8 +34,8 @@
 	<p>Now with draggable text boxes!</p>
   <div id = 'controls' class="controls">
     <div id = 'addButtons' class="buttonField">
-      <button onclick="addField();">Add field</button>
-      <input type="file" id="image_source" accept="image/" onchange="uploadImg();"/>
+      <button onclick="addField();">Add field</button> 
+      <input type="file" id="image_source" accept="image/" onchange="createImgOrigin();"/>
       <button onclick="removeImgs();">Remove images</button>
       <button onclick="callAllImages();">DEBUG: Call all var images</button>
     </div>

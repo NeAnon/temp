@@ -161,6 +161,7 @@ function addMouseEventHandlers(imageId){
 		setOffsets(e);
 		updateStyleMenu();
 		setManualStyleUpdateEvents();
+		document.getElementById('componentControls').addEventListener('click', updateStyleMenu);
 		document.addEventListener("mousedown", checkClick);
 	})
 	elem.addEventListener("contextmenu", customContextMenu);
@@ -233,16 +234,31 @@ function callAllImages(){
 	}
 }
 
-function uploadImg(){
+function createImgOrigin(){
+	//Can this still be called an origin if it's created after...?
+
+	var imgList = document.getElementById("visualsList");
+	var count = 0;
+
+	newDiv = document.createElement('div');
+	//Find a free id
+	while(document.getElementById('img' + count + 'container') != null){count++;}
+	newDiv.id = 'img'+count+'container';
+	newDiv.style.position = 'absolute';
+
 	var img = document.createElement('img');
 	img.src = window.URL.createObjectURL(document.getElementById('image_source').files[0]);
+	img.id= 'img'+(count);
 	img.width = 200;
-	var imageContainer = document.createElement('div');
-	imageContainer.id = 'newImgContainer';
-	imageContainer.appendChild(img);
-	document.getElementById('visualImages').appendChild(imageContainer);
-	//alert('success!');
-} 
+	newDiv.appendChild(img);
+
+	newDiv.setAttribute('posX', 0);
+	newDiv.setAttribute('posY', 0);
+	imgList.append(newDiv);
+	addImage(newDiv.id);
+
+}
+
 /**************************************************************************************** */
 //										
 /**************************************************************************************** */
@@ -303,6 +319,7 @@ function customContextMenu(e){
 			return;
 		}
 		else{
+			stopTracking();
 			document.getElementById(relatedInput(contextMenuTarget.id)).parentElement.remove();
 			contextMenuTarget.parentElement.remove();
 			contextMenu.style.visibility = "hidden";
@@ -405,7 +422,6 @@ function formatAttrLabel(label){
 }
 
 function closeStyleMenu(){
-	console.log('Style menu closed!');
 	let controls = document.getElementById('componentControls');
 	while(controls.firstChild){
 		controls.firstChild.remove();
@@ -425,5 +441,9 @@ function checkClick(e){
 
 function stopTracking(){
 	if(!trackedElement){return;}
-	document.getElementById(trackedElement).style.outline = 0; trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);
+	document.getElementById('componentControls').removeEventListener('click', updateStyleMenu());
+	document.getElementById(trackedElement).style.outline = 0; 
+	trackedElement = ""; 
+	closeStyleMenu(); 
+	document.removeEventListener("mousedown", checkClick);
 }
