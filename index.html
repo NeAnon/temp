@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<!-- Needed to get rid of that one annoying 'favicon.ico not found' message -->
+<link rel="shortcut icon" href="favicon/favicon.ico"> 
 <link rel="stylesheet" href="style.css" type="text/css">
 <script type = "text/javascript" src = "js/script.js"> </script>
     
@@ -13,13 +15,15 @@
     <button class="tabs" onclick="openTab(event, 'Design')" id="defaultOpen">Design</button>
     <button class="tabs" onclick="openTab(event, 'Code')">Code</button>
 
-    <label class="tabs">Template Creator <br> by Nean <br> v0.1</label>
+    <label class="tabs">Template Creator <br> by Nean <br> v0.1.1</label>
   </div>
 
   <!-- Tab content -->
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
     <div id = "inputList" count = '0'>
+    </div>
+    <div id = "visualsList" count = '0'>
     </div>
     <button onclick="download(findAndReplaceAll(getElementById('filenameInput').value), findAndReplaceAll(getElementById('templateText').value));">Download</button> <br/>
     <!-- <button onclick="findAndReplaceAll(getElementById('templateText').value);">Parse test</button> <br/> -->
@@ -30,8 +34,8 @@
 	<p>Now with draggable text boxes!</p>
   <div id = 'controls' class="controls">
     <div id = 'addButtons' class="buttonField">
-      <button onclick="addField();">Add field</button>
-      <input type="file" id="image_source" accept="image/" onchange="uploadImg();"/>
+      <button onclick="addField();">Add field</button> 
+      <input type="file" id="image_source" accept="image/" onchange="createImgOrigin();"/>
       <button onclick="removeImgs();">Remove images</button>
       <button onclick="callAllImages();">DEBUG: Call all var images</button>
     </div>

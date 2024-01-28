@@ -1,6 +1,8 @@
 var fields;
 var draggedElement;	var trackedElement;
+//Offsets for when an element is pressed
 var mouseDragOffsetX; var mouseDragOffsetY;
+//The bounding box of the image setting field - limits how far left or up an image can be dragged. (image in this case being a reflection of an element on the 'fill' screen)
 var imageSetX; var imageSetY;
 var contextMenuTarget;
 
@@ -106,13 +108,10 @@ function findAndReplaceAll(templateText){
 }    
 
 function addImage(sourceDivId){
-	//Nooooo you can't just pass this shit directly, you have to do this funny
-	//fucking roundabout shit to read any values you set on a div
 	let sourceDiv = document.getElementById(sourceDivId);
 	newImage = document.createElement('div');
 	//newImage.setAttribute('referenceId', sourceDiv.id);
 	//newImage.setAttribute('id', sourceDiv.id + 'Image');
-	//IM LOSING MY FUCKInG MIND WITH THIS LANGUAGE WHY DOES EVERYTHING FAIL SILENTLY
 	newImage.setAttribute('posX', sourceDiv.getAttribute('posX'));
 	newImage.setAttribute('posY', sourceDiv.getAttribute('posY'));
 	newImage.setAttribute('referenceId', sourceDiv.getAttribute('id'));
@@ -152,12 +151,17 @@ function addMouseEventHandlers(imageId){
 	elem.addEventListener("mousedown", (e) => {
 		draggedElement = elem.id;
 		if(trackedElement != elem.id){
+			stopTracking();
 			openStyleMenu();
 		}
 		trackedElement = elem.id;
+		document.getElementById(trackedElement).style.outline = '2px solid #ff0000';
 		onmousemove = dragElement;
 		onmouseup = stopDrag;
 		setOffsets(e);
+		updateStyleMenu();
+		setManualStyleUpdateEvents();
+		document.getElementById('componentControls').addEventListener('click', updateStyleMenu);
 		document.addEventListener("mousedown", checkClick);
 	})
 	elem.addEventListener("contextmenu", customContextMenu);
@@ -174,6 +178,7 @@ function setOffsets(e){
 	console.log('MDOX: ' + mouseDragOffsetX + ' MDOY: ' + mouseDragOffsetY);
 }
 
+//Checks whether the box is within the space for var and visual images. I have no idea why this was picked as the name for such a check
 function imageRelativeX(boxLeft){
 	return boxLeft > imageSetX ? boxLeft : imageSetX ;
 }
@@ -192,9 +197,9 @@ function adjustCursorOffsetY(cursorY){
 
 function dragElement(e) {
 	console.log('Element: ' + draggedElement + ' X: ' + e.clientX + ' Y: ' + e.clientY);
-	console.log('Scroll dist: ' + window.pageXOffset + ' Y: ' + window.pageYOffset);
 	document.getElementById(draggedElement).style.left = imageRelativeX(adjustCursorOffsetX(e.clientX - mouseDragOffsetX))+ 'px';
 	document.getElementById(draggedElement).style.top = imageRelativeY(adjustCursorOffsetY(e.clientY - mouseDragOffsetY)) + 'px';
+	updateStyleMenu();
 	//style.top = e.clientY +'px';
 }
 
@@ -229,16 +234,31 @@ function callAllImages(){
 	}
 }
 
-function uploadImg(){
+function createImgOrigin(){
+	//Can this still be called an origin if it's created after...?
+
+	var imgList = document.getElementById("visualsList");
+	var count = 0;
+
+	newDiv = document.createElement('div');
+	//Find a free id
+	while(document.getElementById('img' + count + 'container') != null){count++;}
+	newDiv.id = 'img'+count+'container';
+	newDiv.style.position = 'absolute';
+
 	var img = document.createElement('img');
 	img.src = window.URL.createObjectURL(document.getElementById('image_source').files[0]);
+	img.id= 'img'+(count);
 	img.width = 200;
-	var imageContainer = document.createElement('div');
-	imageContainer.id = 'newImgContainer';
-	imageContainer.appendChild(img);
-	document.getElementById('visualImages').appendChild(imageContainer);
-	//alert('success!');
-} 
+	newDiv.appendChild(img);
+
+	newDiv.setAttribute('posX', 0);
+	newDiv.setAttribute('posY', 0);
+	imgList.append(newDiv);
+	addImage(newDiv.id);
+
+}
+
 /**************************************************************************************** */
 //										
 /**************************************************************************************** */
@@ -299,6 +319,7 @@ function customContextMenu(e){
 			return;
 		}
 		else{
+			stopTracking();
 			document.getElementById(relatedInput(contextMenuTarget.id)).parentElement.remove();
 			contextMenuTarget.parentElement.remove();
 			contextMenu.style.visibility = "hidden";
@@ -351,11 +372,33 @@ function rebind(inputId, newTag){
 }
 
 function openStyleMenu(){
-	addAttrTracker('left');
-	addAttrTracker('top');
+	addAttrTracker('left', 'px');
+	addAttrTracker('top', 'px');
 }
 
-function addAttrTracker(value){
+function setManualStyleUpdateEvents(){
+	document.getElementById('leftTracker').addEventListener('input', (e) => {
+		document.getElementById(trackedElement).style.left = ((document.getElementById('leftTracker').value > imageSetX) ? document.getElementById('leftTracker').value : imageSetX) + 'px';
+	});
+	document.getElementById('topTracker').addEventListener('input', (e) => {
+		document.getElementById(trackedElement).style.top = ((document.getElementById('topTracker').value > imageSetY) ? document.getElementById('topTracker').value : imageSetY) + 'px';
+	});
+}
+
+//Since the element style fields are mostly for universal attributes, these can be hardcoded instead of having to play around with evals
+function updateStyleMenu(){
+	//Record the x/y of the element within the page and cut off the 'px' at the end.
+	let leftval = document.getElementById(trackedElement).style.left.substring(0, document.getElementById(trackedElement).style.left.length-2);
+	leftval = leftval ? leftval : imageSetX + '';
+	document.getElementById('leftTracker').value = leftval;
+	document.getElementById('leftTracker').size = leftval.length+1;	//Not necessary, but it looks a little better without the massive empty space at the end of the input field.
+	let topVal = document.getElementById(trackedElement).style.top.substring(0, document.getElementById(trackedElement).style.top.length-2);
+	topVal = topVal ? topVal : imageSetY + '';
+	document.getElementById('topTracker').value = topVal;
+	document.getElementById('topTracker').size = topVal.length+1;
+}
+
+function addAttrTracker(value, unit = ''){
 	let attributes = document.getElementById('componentControls');
 	let wrapper = document.createElement('div');
 	let elem = document.createElement('input');
@@ -366,6 +409,12 @@ function addAttrTracker(value){
 	attributes.appendChild(wrapper);
 	wrapper.appendChild(label);
 	wrapper.appendChild(elem);
+	if(unit){
+		let unitLabel = document.createElement('label');
+		unitLabel.setAttribute('for', elem.id);
+		unitLabel.innerText = ' ' + unit;	
+		wrapper.appendChild(unitLabel);
+	}
 }
 
 function formatAttrLabel(label){
@@ -373,7 +422,6 @@ function formatAttrLabel(label){
 }
 
 function closeStyleMenu(){
-	console.log('Style menu closed!');
 	let controls = document.getElementById('componentControls');
 	while(controls.firstChild){
 		controls.firstChild.remove();
@@ -382,8 +430,20 @@ function closeStyleMenu(){
 
 function checkClick(e){
 	let elementBoundingBox = document.getElementById(trackedElement).getBoundingClientRect();
-	if(elementBoundingBox.x > e.clientX || elementBoundingBox.x + elementBoundingBox.width < e.clientX)
-	{trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);} //x within box check
-	else if(elementBoundingBox.y > e.clientY || elementBoundingBox.y + elementBoundingBox.height < e.clientY)
-	{trackedElement = ""; closeStyleMenu(); document.removeEventListener("mousedown", checkClick);} //y within box check)
+	let styleBoundingBox = document.getElementById('componentControls').getBoundingClientRect();
+	if(	(elementBoundingBox.x > e.clientX || elementBoundingBox.x + elementBoundingBox.width < e.clientX) && 
+		(styleBoundingBox.x > e.clientX || styleBoundingBox.x + styleBoundingBox.width < e.clientX))
+	{stopTracking();} //x within box check (both selected element and css-field)
+	else if((elementBoundingBox.y > e.clientY || elementBoundingBox.y + elementBoundingBox.height < e.clientY) && 
+			(styleBoundingBox.y > e.clientY || styleBoundingBox.y + styleBoundingBox.height < e.clientY))
+	{stopTracking();} //y within box check (both selected element and css-field)
+}
+
+function stopTracking(){
+	if(!trackedElement){return;}
+	document.getElementById('componentControls').removeEventListener('click', updateStyleMenu());
+	document.getElementById(trackedElement).style.outline = 0; 
+	trackedElement = ""; 
+	closeStyleMenu(); 
+	document.removeEventListener("mousedown", checkClick);
 }
