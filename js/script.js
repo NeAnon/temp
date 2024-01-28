@@ -64,27 +64,23 @@ function addField(){
 	var count = 0;
 	//alert(count);
 	//alert("value saved! Current count: " + varList.getAttribute('value'));
-	newDiv = document.createElement('div');
 	//Find a free id
-	while(document.getElementById('var' + count + 'container') != null){count++;}
-	newDiv.id = 'var'+count+'container';
-	newDiv.style.position = 'absolute';
-
+	while(document.getElementById('var' + count) != null){count++;}
+	
 	let element = document.createElement('input');
 	element.type = "text";
 	element.id= 'var'+(count);
 	element.size=10;
 	//alert("child created.");
-	newDiv.appendChild(element);
-
+	
 	//alert("Child textbox added, id: " +(element.getAttribute('id')));
 	
 	//linebreak = document.createElement("br");
-	//newDiv.appendChild(linebreak);
-	newDiv.setAttribute('posX', 0);
-	newDiv.setAttribute('posY', 0);
-	varList.append(newDiv);
-	addImage(newDiv.id);
+	element.setAttribute('posX', 0);
+	element.setAttribute('posY', 0);
+	element.style.position = 'absolute';
+	varList.append(element);
+	addImage(element.id);
 	//alert(newDiv.posX);
 
 }
@@ -107,23 +103,21 @@ function findAndReplaceAll(templateText){
 	return templateText;
 }    
 
-function addImage(sourceDivId){
-	let sourceDiv = document.getElementById(sourceDivId);
-	newImage = document.createElement('div');
+function addImage(sourceVarId){
+	let sourceVar = document.getElementById(sourceVarId);
+	let newImage = sourceVar.cloneNode(false);
 	//newImage.setAttribute('referenceId', sourceDiv.id);
 	//newImage.setAttribute('id', sourceDiv.id + 'Image');
-	newImage.setAttribute('posX', sourceDiv.getAttribute('posX'));
-	newImage.setAttribute('posY', sourceDiv.getAttribute('posY'));
-	newImage.setAttribute('referenceId', sourceDiv.getAttribute('id'));
-	newImage.setAttribute('id', sourceDiv.id+'Image');
+	newImage.setAttribute('posX', sourceVar.getAttribute('posX'));
+	newImage.setAttribute('posY', sourceVar.getAttribute('posY'));
+	newImage.setAttribute('referenceId', sourceVar.getAttribute('id'));
+	newImage.setAttribute('id', sourceVar.id+'Image');
 	
 	newImage.className = 'image';
 	newImage.style.position = 'absolute';
 
-	newImage.appendChild(sourceDiv.firstChild.cloneNode(false));
-	newImage.firstChild.setAttribute('id', sourceDiv.firstChild.id+'Image');
-	newImage.firstChild.value = 	sourceDiv.firstChild.id.substring(3);
-	newImage.firstChild.style.color = 'rgba(0,0,0,0)';
+	newImage.value = sourceVar.id.substring(3);
+	newImage.style.color = 'rgba(0,0,0,0)';
 
 	
 	//alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
@@ -142,11 +136,7 @@ function addMouseEventHandlers(imageId){
 	let elem = document.getElementById(imageId);
 	//alert("adding mouse events to element " + elem.id + " of type " + elem.nodeName);
 	
-	let node = elem.firstChild;
-	while(node){
-		node.addEventListener("mousedown", (e) => {e.preventDefault()});
-		node = node.nextSibling;
-	}
+	elem.addEventListener("mousedown", (e) => {e.preventDefault()});
 
 	elem.addEventListener("mousedown", (e) => {
 		draggedElement = elem.id;
@@ -205,6 +195,8 @@ function dragElement(e) {
 
 function stopDrag(e){
 	let draggable = document.getElementById(draggedElement);
+	console.log(draggable.id);
+	console.log(draggable.getAttribute('referenceId'));
 	let origin = document.getElementById(draggable.getAttribute('referenceId'));
 
 	//Using the actual style values to get/set positions, since these are going to be the most accurate to the design appearance.
@@ -226,22 +218,19 @@ function createImgOrigin(){
 	var imgList = document.getElementById("componentList");
 	var count = 0;
 
-	newDiv = document.createElement('div');
 	//Find a free id
-	while(document.getElementById('img' + count + 'container') != null){count++;}
-	newDiv.id = 'img'+count+'container';
-	newDiv.style.position = 'absolute';
-
+	while(document.getElementById('img' + count) != null){count++;}
+	
 	var img = document.createElement('img');
 	img.src = window.URL.createObjectURL(document.getElementById('image_source').files[0]);
 	img.id= 'img'+(count);
 	img.width = 200;
-	newDiv.appendChild(img);
+	img.style.position = 'absolute';
 
-	newDiv.setAttribute('posX', 0);
-	newDiv.setAttribute('posY', 0);
-	imgList.append(newDiv);
-	addImage(newDiv.id);
+	img.setAttribute('posX', 0);
+	img.setAttribute('posY', 0);
+	imgList.append(img);
+	addImage(img.id);
 
 }
 
@@ -268,7 +257,7 @@ function customContextMenu(e){
 			let inputLength = parseInt(prompt("Character length of input field: ", contextMenuTarget.size));
 			contextMenuTarget.size = inputLength;
 			//relatedInput(contextMenuTarget.id);
-			document.getElementById(relatedInput(contextMenuTarget.id)).size = inputLength;
+			document.getElementById(contextMenuTarget.getAttribute('referenceId')).size = inputLength;
 		});
 		contextMenu.appendChild(elem);
 	}
@@ -278,7 +267,7 @@ function customContextMenu(e){
 		elem.innerText = "Rename referenced variable";
 		elem.addEventListener('click', (e)=>{
 			// 			The 'getElementById().id' is necessary. Otherwise the page has no idea what the return type is (and we ensure the object actually exists).
-			let newVarName = prompt("New variable name: ", document.getElementById(relatedInput(contextMenuTarget.id)).id.substring(3)/*'var'.length()*/);
+			let newVarName = prompt("New variable name: ", document.getElementById(contextMenuTarget.getAttribute('referenceId')).id.substring(3)/*'var'.length()*/);
 			if(newVarName!=null){
 				rebind(contextMenuTarget.id, newVarName);
 			}
@@ -306,8 +295,8 @@ function customContextMenu(e){
 		}
 		else{
 			stopTracking();
-			document.getElementById(relatedInput(contextMenuTarget.id)).parentElement.remove();
-			contextMenuTarget.parentElement.remove();
+			document.getElementById(contextMenuTarget.getAttribute('referenceId')).remove();
+			contextMenuTarget.remove();
 			contextMenu.style.visibility = "hidden";
 			destroyAllContextMenuOptions();
 		}
@@ -322,11 +311,6 @@ function customContextMenu(e){
 		else if(contextMenu.getBoundingClientRect().y > e.clientY || contextMenu.getBoundingClientRect().y + contextMenu.getBoundingClientRect().height < e.clientY)
 		{contextMenu.style.visibility = 'hidden'; destroyAllContextMenuOptions();} //y within box check
 	});
-}
-
-function relatedInput(inImageId){
-	if(document.getElementById(inImageId).parentElement.getAttribute('referenceId') == null){ return; }
-	return document.getElementById(document.getElementById(inImageId).parentElement.getAttribute('referenceId')).firstChild.id;
 }
 
 function destroyAllContextMenuOptions(){
@@ -348,10 +332,8 @@ function rebind(inputId, newTag){
 		return;
 	}
 	else{
-		document.getElementById(relatedInput(inputId)).id = 'var'+newTag;
-		document.getElementById(relatedInput(inputId)).parentElement.id = 'var'+newTag+'container';
-		document.getElementById(inputId).parentElement.setAttribute('referenceId', 'var'+newTag+'container');
-		document.getElementById(inputId).parentElement.id = 'var'+newTag+'containerImage';
+		document.getElementById(document.getElementById(inputId).getAttribute('referenceId')).id = 'var'+newTag;
+		document.getElementById(inputId).setAttribute('referenceId', 'var'+newTag);
 		document.getElementById(inputId).value = newTag;
 		document.getElementById(inputId).id = 'var'+newTag+'Image'
 	}
