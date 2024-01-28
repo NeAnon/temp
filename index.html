@@ -21,9 +21,7 @@
   <!-- Tab content -->
   <div id="Fill" class="tabcontent">
     <h3>Fill</h3>
-    <div id = "inputList" count = '0'>
-    </div>
-    <div id = "visualsList" count = '0'>
+    <div id = "componentList">
     </div>
     <button onclick="download(findAndReplaceAll(getElementById('filenameInput').value), findAndReplaceAll(getElementById('templateText').value));">Download</button> <br/>
     <!-- <button onclick="findAndReplaceAll(getElementById('templateText').value);">Parse test</button> <br/> -->
@@ -31,22 +29,18 @@
 
   <div id="Design" class="tabcontent">
     <h3>Design</h3>
-	<p>Now with draggable text boxes!</p>
-  <div id = 'controls' class="controls">
-    <div id = 'addButtons' class="buttonField">
-      <button onclick="addField();">Add field</button> 
-      <input type="file" id="image_source" accept="image/" onchange="createImgOrigin();"/>
-      <button onclick="removeImgs();">Remove images</button>
-      <button onclick="callAllImages();">DEBUG: Call all var images</button>
-    </div>
-    <div id = 'componentControls' class="cssField">
+	  <p>Now with draggable text boxes!</p>
+    <div id = 'controls' class="controls">
+      <div id = 'addButtons' class="buttonField">
+        <button onclick="addField();">Add field</button> 
+        <button onclick="removeImgs();">Remove images</button>
+        <input type="file" id="image_source" accept="image/" onchange="createImgOrigin();"/>
+      </div>
+      <div id = 'componentControls' class="cssField">
 
+      </div>
     </div>
-  </div>
-    <div id = "inputImages" class = "images">
- 
-    </div>     
-    <div id = "visualImages" class = "images">
+    <div id = "images" class = "images">
       
     </div>
   </div>

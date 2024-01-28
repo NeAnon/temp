@@ -11,13 +11,13 @@ function initializePage(){
 	document.getElementById('defaultOpen').click();
 	fields = 1;
 
-	while(document.getElementById('inputImages').firstChild){
+	while(document.getElementById('images').firstChild){
 		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
-		document.getElementById('inputImages').removeChild(document.getElementById('inputImages').firstChild);
+		document.getElementById('images').removeChild(document.getElementById('images').firstChild);
 	}
-	while(document.getElementById('inputList').firstChild){
+	while(document.getElementById('componentList').firstChild){
 		//I have to do this bullshit because apparently divs are pre-initialized with text and I can't iterate through fields otherwise.
-		document.getElementById('inputList').removeChild(document.getElementById('inputList').firstChild);
+		document.getElementById('componentList').removeChild(document.getElementById('componentList').firstChild);
 	}
 	document.addEventListener("contextmenu", (e) => {e.preventDefault();});
 }
@@ -60,7 +60,7 @@ function download(filename, content) {
 
 function addField(){
 	//alert("Started...");
-	var varList = document.getElementById("inputList");
+	var varList = document.getElementById("componentList");
 	var count = 0;
 	//alert(count);
 	//alert("value saved! Current count: " + varList.getAttribute('value'));
@@ -92,7 +92,7 @@ function addField(){
 
 //This all needs to be reworked!!
 function findAndReplaceAll(templateText){
-	let varList = document.getElementById('inputList');
+	let varList = document.getElementById('componentList');
 	let currnode = varList.firstChild;
 	//alert(varCount);
 	while(currnode){
@@ -127,7 +127,7 @@ function addImage(sourceDivId){
 
 	
 	//alert("Type: "+newImage.firstChild.nodeName + " Id: " + newImage.firstChild.id);
-	document.getElementById('inputImages').appendChild(newImage);
+	document.getElementById('images').appendChild(newImage);
 	//alert(newImage.id);
 	
 	addMouseEventHandlers(newImage.id);
@@ -168,7 +168,7 @@ function addMouseEventHandlers(imageId){
 }
 
 function setOffsets(e){
-	var imageBoundingBox = document.getElementById('inputImages').getBoundingClientRect();
+	var imageBoundingBox = document.getElementById('images').getBoundingClientRect();
 	var draggableBoundingBox = document.getElementById(draggedElement).getBoundingClientRect();
 	console.log('imageBoxX: ' + imageBoundingBox.x + ' imageBoxY: ' + imageBoundingBox.y);
 	mouseDragOffsetX = e.clientX - draggableBoundingBox.x;
@@ -220,24 +220,10 @@ function stopDrag(e){
 	draggedElement = "";
 }
 
-function callAllImages(){
-	alert('calling all images!');
-	let node = document.getElementById('inputImages').firstChild;
-	alert('first Node found');
-	while(node){
-		alert("element " + node.id + " exists." );
-		alert("its type is " + node.nodeName);
-		alert(	"\nposition X: " + node.getAttribute('posX')+
-				"\nposition Y: " + node.getAttribute('posY')+ 
-				"\nreferenced element: " + node.getAttribute('referenceId'));
-		node = node.nextSibling;
-	}
-}
-
 function createImgOrigin(){
 	//Can this still be called an origin if it's created after...?
 
-	var imgList = document.getElementById("visualsList");
+	var imgList = document.getElementById("componentList");
 	var count = 0;
 
 	newDiv = document.createElement('div');
