@@ -26,7 +26,7 @@ function initializePage(){
 		createImgFromSource(document.getElementById("imgLink").value);
 	});
 
-	document.getElementById('saveTemplate').addEventListener('click', downloadAll);
+	document.getElementById('saveTemplate').addEventListener('click', downloadTemplate);
 }
 
 function openTab(evt, TabName) {
@@ -464,4 +464,26 @@ function stopTracking(){
 	trackedElement = ""; 
 	closeStyleMenu(); 
 	document.removeEventListener("mousedown", checkClick);
+}
+
+/**
+ * Since I cannot create a folder to store all of the assets in, the template can be exported as a single (albeit large) file.
+ * This allows uploaded images to be stored, and makes it simpler to download/upload a template.
+ * It will also allow both local and link images to be used if the user desires.
+ * Hopefully it will make usage simpler.
+ */
+function downloadTemplate(){
+	//Master function for parsing all the stored components and saving them as one file.
+	let components = document.getElementById('componentList');
+	component = components.firstChild;
+	while(component){
+		console.log(component);
+		console.log(component.attributes);
+		//Element recording starts here!!
+		
+
+
+		//Element recording stops here!!
+		component = component.nextSibling;
+	}	
 }
