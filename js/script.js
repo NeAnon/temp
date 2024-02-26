@@ -20,6 +20,11 @@ function initializePage(){
 		document.getElementById('componentList').removeChild(document.getElementById('componentList').firstChild);
 	}
 	document.addEventListener("contextmenu", (e) => {e.preventDefault();});
+	document.getElementById("imgLinkUpload").addEventListener('click', (e) => {
+		e.preventDefault();
+		console.log(document.getElementById("imgLink").value);
+		createImgFromSource(document.getElementById("imgLink").value);
+	})
 }
 
 function openTab(evt, TabName) {
@@ -213,8 +218,11 @@ function stopDrag(e){
 }
 
 function createImgOrigin(){
-	//Can this still be called an origin if it's created after...?
+	let source = window.URL.createObjectURL(document.getElementById('image_source').files[0]);
+	createImgFromSource(source);
+}
 
+function createImgFromSource(source){
 	var imgList = document.getElementById("componentList");
 	var count = 0;
 
@@ -222,7 +230,7 @@ function createImgOrigin(){
 	while(document.getElementById('img' + count) != null){count++;}
 	
 	var img = document.createElement('img');
-	img.src = window.URL.createObjectURL(document.getElementById('image_source').files[0]);
+	img.src = source;
 	img.id= 'img'+(count);
 	img.width = 200;
 	img.style.position = 'absolute';
@@ -231,7 +239,6 @@ function createImgOrigin(){
 	img.setAttribute('posY', 0);
 	imgList.append(img);
 	addImage(img.id);
-
 }
 
 /**************************************************************************************** */
@@ -287,9 +294,9 @@ function customContextMenu(e){
 	}
 
 	//Deletion (this should probably be on the bottom of the stack)
-	let elem = document.createElement("button");
-	elem.innerText = "Delete";
-	elem.addEventListener('click', (e) => {
+	let elemDel = document.createElement("button");
+	elemDel.innerText = "Delete";
+	elemDel.addEventListener('click', (e) => {
 		if(!e.shiftKey && !confirm("Are you sure?")){
 			return;
 		}
@@ -301,8 +308,8 @@ function customContextMenu(e){
 			destroyAllContextMenuOptions();
 		}
 	})
-	elem.style.color = '#aa0000';
-	contextMenu.appendChild(elem);
+	elemDel.style.color = '#aa0000';
+	contextMenu.appendChild(elemDel);
 
 	//Remove context menu on clicking away
 	document.addEventListener("mousedown", (e) => {
