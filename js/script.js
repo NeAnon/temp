@@ -477,19 +477,33 @@ async function imgToBase64(imageId){
  * This allows uploaded images to be stored, and makes it simpler to download/upload a template.
  * It will also allow both local and link images to be used if the user desires.
  * Hopefully it will make usage simpler.
+ * 
+ * The export string (may) have the format:
+ * type, subtype, position, id, extra data.
  */
 function downloadTemplate(){
 	//Master function for parsing all the stored components and saving them as one file.
+	let exportString = "";	let compType = ""; let separator = '<br>';
 	let components = document.getElementById('componentList');
 	component = components.firstChild;
 	while(component){
 		console.log(component);
 		console.log(component.attributes);
 		//Element recording starts here!!
-		
+		compType = component.nodeName;
+		console.log(compType);
+		if(compType.toLowerCase() == 'input'){
+			exportString += 'input;' + component.type + ';';
+			exportString += component.getAttribute('posX') + ';';
+			exportString += component.getAttribute('posY') + ';';
+			exportString += component.id + ';';
+			exportString += component.size + ';';
+			console.log(component.type);
+		}
 
-
+		exportString += separator + '\n';
 		//Element recording stops here!!
 		component = component.nextSibling;
 	}	
+	console.log(exportString);
 }
