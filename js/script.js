@@ -506,4 +506,57 @@ function downloadTemplate(){
 		component = component.nextSibling;
 	}	
 	console.log(exportString);
+	download('filename.neanontemplate', exportString);
+}
+
+function loadTemplate(){
+	let templateContents = document.getElementById('loadTemplate').files[0];
+
+	var fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+      	var textFromFileLoaded = fileLoadedEvent.target.result;
+      	loadComponents(textFromFileLoaded);
+  	};
+
+  	fileReader.readAsText(templateContents, "UTF-8");
+}
+
+function loadComponents(componentData){
+	//Separate components into an array
+	let separator = '<br>';
+	let components = [];
+	let endIndex = 0;
+	while(componentData){
+		endIndex = componentData.indexOf(separator);
+		components[components.length] = componentData.substring(0, endIndex);
+		componentData = componentData.substring(endIndex + separator.length + 1);
+		console.log(components);
+		console.log(componentData);
+	}
+	components.forEach(component => {
+		componentArr = component.split(';');
+		if(componentArr[0] == 'input'){
+			addField();
+		}
+		newField = document.getElementById('componentList').lastChild;
+		newField.type = componentArr[1];
+		newField.setAttribute('posX', componentArr[2]);
+		newField.setAttribute('posY', componentArr[3]);
+		newField.id = componentArr[4];
+		newField.size = componentArr[5];
+		updatePositions(newField.id);
+	});
+}
+
+function updatePositions(compId){
+	let component = document.getElementById(compId);
+	let componentImage = document.getElementById(compId + "Image");
+
+	console.log(component.getAttribute('posX'));
+	component.style.left = component.getAttribute('posX');
+	console.log(component.getAttribute('posY'));
+	component.style.top = component.getAttribute('posY');
+
+	componentImage.style.left = component.getAttribute('posX');
+	componentImage.style.top = component.getAttribute('posY');
 }

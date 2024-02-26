@@ -24,6 +24,7 @@
     <div id = "componentList">
     </div>
     <button onclick="download(findAndReplaceAll(getElementById('filenameInput').value), findAndReplaceAll(getElementById('templateText').value));">Download</button> <br/>
+    <input type="file" id="loadTemplate" accept=".neanontemplate" onchange="loadTemplate();"/> <br/>
     <!-- <button onclick="findAndReplaceAll(getElementById('templateText').value);">Parse test</button> <br/> -->
   </div>
 
