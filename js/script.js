@@ -293,6 +293,18 @@ function customContextMenu(e){
 		contextMenu.appendChild(elem);
 	}
 
+	//[TEST] download element?
+	let elemDwn = document.createElement("button");
+	elemDwn.innerText = "Download";
+	elemDwn.addEventListener('click', (e)=>{
+		let aDwn = document.createElement('a');
+		aDwn.href = contextMenuTarget.src;
+		aDwn.download = 'aaa.jpg';	//Placeholder!!
+		aDwn.click();
+		aDwn.remove();
+	});
+	contextMenu.appendChild(elemDwn);
+	
 	//Deletion (this should probably be on the bottom of the stack)
 	let elemDel = document.createElement("button");
 	elemDel.innerText = "Delete";
