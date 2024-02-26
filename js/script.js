@@ -320,19 +320,8 @@ function customContextMenu(e){
 	//[TEST] convert to base64?
 	let elemB64 = document.createElement("button");
 	elemB64.innerText = "Convert To Base64";
-	elemB64.addEventListener('click', async (e)=>{
-		//Get source URL of the image, then turn it into a Blob. 
-		let blob = await fetch(contextMenuTarget.src).then(r => r.blob());
-		//Once done, use FileReader to turn the data into base64.
-		var reader = new FileReader();
-		reader.readAsDataURL(blob);
-		reader.onload = function () {
-			console.log(reader.result);
-		};
-		reader.onerror = function (error) {
-			console.log('Error: ', error);
-		};
-		//This should probably be reworked...? Or I'll need to read up on Promise chains more.
+	elemB64.addEventListener('click', () => {
+		console.log(imgToBase64(contextMenuTarget.id));
 	});
 	contextMenu.appendChild(elemB64);
 	
@@ -464,6 +453,23 @@ function stopTracking(){
 	trackedElement = ""; 
 	closeStyleMenu(); 
 	document.removeEventListener("mousedown", checkClick);
+}
+
+//This allows images to be stared as text strings, making it possible to store everything as text.
+async function imgToBase64(imageId){
+	let img = document.getElementById(imageId);
+	//Get source URL of the image, then turn it into a Blob. 
+	let blob = await fetch(img.src).then(r => r.blob());
+	//Once done, use FileReader to turn the data into base64.
+	var reader = new FileReader();
+	reader.readAsDataURL(blob);
+	reader.onload = function () {
+		console.log(reader.result);
+	};
+	reader.onerror = function (error) {
+		console.log('Error: ', error);
+	};
+	//This should probably be reworked...? Or I'll need to read up on Promise chains more.
 }
 
 /**
