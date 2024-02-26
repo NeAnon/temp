@@ -24,7 +24,9 @@ function initializePage(){
 		e.preventDefault();
 		console.log(document.getElementById("imgLink").value);
 		createImgFromSource(document.getElementById("imgLink").value);
-	})
+	});
+
+	document.getElementById('saveTemplate').addEventListener('click', downloadAll);
 }
 
 function openTab(evt, TabName) {
@@ -292,7 +294,6 @@ function customContextMenu(e){
 		});
 		contextMenu.appendChild(elem);
 	}
-
 	//[TEST] download element?
 	let elemDwn = document.createElement("button");
 	elemDwn.innerText = "Download";
@@ -304,6 +305,36 @@ function customContextMenu(e){
 		aDwn.remove();
 	});
 	contextMenu.appendChild(elemDwn);
+
+	//[TEST] Stringify
+	let elemStr = document.createElement("button");
+	elemStr.innerText = "Stringify";
+	elemStr.addEventListener('click', (e)=>{
+		console.log(contextMenuTarget);
+		console.log(contextMenuTarget.src);
+		console.log(contextMenuTarget.src.data);
+	});
+	contextMenu.appendChild(elemStr);
+
+
+	//[TEST] convert to base64?
+	let elemB64 = document.createElement("button");
+	elemB64.innerText = "Convert To Base64";
+	elemB64.addEventListener('click', async (e)=>{
+		//Get source URL of the image, then turn it into a Blob. 
+		let blob = await fetch(contextMenuTarget.src).then(r => r.blob());
+		//Once done, use FileReader to turn the data into base64.
+		var reader = new FileReader();
+		reader.readAsDataURL(blob);
+		reader.onload = function () {
+			console.log(reader.result);
+		};
+		reader.onerror = function (error) {
+			console.log('Error: ', error);
+		};
+		//This should probably be reworked...? Or I'll need to read up on Promise chains more.
+	});
+	contextMenu.appendChild(elemB64);
 	
 	//Deletion (this should probably be on the bottom of the stack)
 	let elemDel = document.createElement("button");
