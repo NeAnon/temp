@@ -512,7 +512,8 @@ async function downloadTemplate(){
 			console.log(component.type);
 		}
 		if(compType.toLowerCase() == 'img'){
-			exportString += 'img;' + (component.src.substring(0,4) == 'blob' ? 'blob;' : 'link;');
+			exportString += 'img;' + (	component.src.substring(0,4) == 'blob' ||
+										component.src.substring(0,4) == 'data' ? 'blob;' : 'link;');
 			exportString += component.getAttribute('posX') + ';';
 			exportString += component.getAttribute('posY') + ';';
 			exportString += component.id + ';';
