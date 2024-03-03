@@ -321,6 +321,7 @@ function customContextMenu(e){
 	let elemB64 = document.createElement("button");
 	elemB64.innerText = "Convert To Base64";
 	elemB64.addEventListener('click', () => {
+		imgToBase64(contextMenuTarget.id);
 		console.log(imgToBase64(contextMenuTarget.id));
 	});
 	contextMenu.appendChild(elemB64);
@@ -457,19 +458,29 @@ function stopTracking(){
 
 //This allows images to be stared as text strings, making it possible to store everything as text.
 async function imgToBase64(imageId){
-	let img = document.getElementById(imageId);
-	//Get source URL of the image, then turn it into a Blob. 
-	let blob = await fetch(img.src).then(r => r.blob());
-	//Once done, use FileReader to turn the data into base64.
-	var reader = new FileReader();
-	reader.readAsDataURL(blob);
-	reader.onload = function () {
-		console.log(reader.result);
-	};
-	reader.onerror = function (error) {
-		console.log('Error: ', error);
-	};
-	//This should probably be reworked...? Or I'll need to read up on Promise chains more.
+	return new Promise((resolve, reject) => {
+		let img = document.getElementById(imageId);
+		//Get source URL of the image, then turn it into a Blob. 
+			fetch(img.src).then(r => r.blob()).then((blob) => {
+			//Once done, use FileReader to turn the data into base64.
+			let reader = new FileReader();
+			reader.readAsDataURL(blob);
+			reader.onload = function () {
+				console.log(reader.result);
+				resolve(reader.result);
+			};
+			reader.onerror = function (error) {
+				reject('Error: ', error);
+			}
+		});
+	})
+}
+
+async function getBase64Equiv(imageId){
+	const result = await imgToBase64(imageId);
+
+	console.log(result);
+	return result;
 }
 
 /**
@@ -481,7 +492,7 @@ async function imgToBase64(imageId){
  * The export string (may) have the format:
  * type, subtype, position, id, extra data.
  */
-function downloadTemplate(){
+async function downloadTemplate(){
 	//Master function for parsing all the stored components and saving them as one file.
 	let exportString = "";	let compType = ""; let separator = '<br>';
 	let components = document.getElementById('componentList');
@@ -506,7 +517,8 @@ function downloadTemplate(){
 			exportString += component.getAttribute('posY') + ';';
 			exportString += component.id + ';';
 			if(component.src.substring(0,4) == 'blob'){
-				//pass
+				const imgData = await getBase64Equiv(component.id) + '';
+				exportString += imgData;
 			} else {
 				exportString += component.src + ';';
 			}
@@ -556,9 +568,14 @@ function loadComponents(componentData){
 			newField.size = componentArr[5];
 		}
 		if(componentArr[0] == 'img'){
+			if(componentArr[1] == 'blob'){
+				console.log(componentArr);
+				componentArr[5] = componentArr[5] + ';' + componentArr[6];
+				console.log(componentArr[5]);
+			}
 			createImgFromSource(componentArr[5]);
 			newField = document.getElementById('componentList').lastChild;
-			newField.type = componentArr[1];
+//			newField.type = componentArr[1];
 			newField.setAttribute('posX', componentArr[2]);
 			newField.setAttribute('posY', componentArr[3]);
 			newField.id = componentArr[4];
