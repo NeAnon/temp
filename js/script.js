@@ -485,7 +485,7 @@ function downloadTemplate(){
 	//Master function for parsing all the stored components and saving them as one file.
 	let exportString = "";	let compType = ""; let separator = '<br>';
 	let components = document.getElementById('componentList');
-	component = components.firstChild;
+	let component = components.firstChild;
 	while(component){
 		console.log(component);
 		console.log(component.attributes);
@@ -499,6 +499,17 @@ function downloadTemplate(){
 			exportString += component.id + ';';
 			exportString += component.size + ';';
 			console.log(component.type);
+		}
+		if(compType.toLowerCase() == 'img'){
+			exportString += 'img;' + (component.src.substring(0,4) == 'blob' ? 'blob;' : 'link;');
+			exportString += component.getAttribute('posX') + ';';
+			exportString += component.getAttribute('posY') + ';';
+			exportString += component.id + ';';
+			if(component.src.substring(0,4) == 'blob'){
+				//pass
+			} else {
+				exportString += component.src + ';';
+			}
 		}
 
 		exportString += separator + '\n';
@@ -537,13 +548,21 @@ function loadComponents(componentData){
 		componentArr = component.split(';');
 		if(componentArr[0] == 'input'){
 			addField();
+			newField = document.getElementById('componentList').lastChild;
+			newField.type = componentArr[1];
+			newField.setAttribute('posX', componentArr[2]);
+			newField.setAttribute('posY', componentArr[3]);
+			newField.id = componentArr[4];
+			newField.size = componentArr[5];
 		}
-		newField = document.getElementById('componentList').lastChild;
-		newField.type = componentArr[1];
-		newField.setAttribute('posX', componentArr[2]);
-		newField.setAttribute('posY', componentArr[3]);
-		newField.id = componentArr[4];
-		newField.size = componentArr[5];
+		if(componentArr[0] == 'img'){
+			createImgFromSource(componentArr[5]);
+			newField = document.getElementById('componentList').lastChild;
+			newField.type = componentArr[1];
+			newField.setAttribute('posX', componentArr[2]);
+			newField.setAttribute('posY', componentArr[3]);
+			newField.id = componentArr[4];
+		}
 		updatePositions(newField.id);
 	});
 }
